@@ -25,18 +25,15 @@ public class TermRelations extends Term {
         final String    tokenInput          = "has_input_compound";
         final String    tokenOutput         = "has_output_compound";
         final String    tokenPartOf         = "part_of";
-        final String    tokenIsA            = "is_a";
         
         Set<Relation> relation = null;
-
+        
         if( tokenInput.equals(type) )
             relation = relations.getInputCompound();
-        if( tokenOutput.equals(type) )
+        else if( tokenOutput.equals(type) )
             relation = relations.getOutputCompound();
-        if( tokenPartOf.equals(type) )
+        else if( tokenPartOf.equals(type) )
             relation = relations.getPartOf();
-        if( tokenIsA.equals(type) )
-            relation = relations.getIsA();
         return relation;
     }
     

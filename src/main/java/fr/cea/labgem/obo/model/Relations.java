@@ -8,7 +8,6 @@ public class Relations {
     private final Set<Relation> input_compound;
     private final Set<Relation> output_compound;
     private final Set<Relation> part_of;
-    private final Set<Relation> is_a;
     
     
     private boolean hasCompound( final Set<Relation> relations, final String id ){
@@ -45,30 +44,10 @@ public class Relations {
      * @param part_of
      * @param is_a
      */
-    public Relations(final Set<Relation> input, final Set<Relation> output, final Set<Relation> part_of, final Set<Relation> is_a) {
+    public Relations(final Set<Relation> input, final Set<Relation> output, final Set<Relation> part_of) {
         this.input_compound     = input;
         this.output_compound    = output;
         this.part_of            = part_of;
-        this.is_a               = is_a;
-    }
-
-
-    /**
-     * @param input
-     * @param output
-     * @param part_of
-     */
-    public Relations(final Set<Relation> input, final Set<Relation> output,
-            final Set<Relation> part_of) {
-        this(input, output, part_of, null);
-    }
-
-
-    /**
-     * @param is_a
-     */
-    public Relations(final Set<Relation> is_a) {
-        this(null, null, null, is_a);
     }
 
     public Set<Relation> getInputCompound() {
@@ -83,11 +62,6 @@ public class Relations {
 
     public Set<Relation> getPartOf() {
         return part_of;
-    }
-
-
-    public Set<Relation> getIsA() {
-        return is_a;
     }
     
     public boolean isPartOf( final String id ){

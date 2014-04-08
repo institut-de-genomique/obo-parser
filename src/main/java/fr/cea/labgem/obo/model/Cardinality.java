@@ -26,7 +26,7 @@ public class Cardinality {
      * @param number
      */
     public Cardinality( final String number ){
-        this( number, null, null, null, null );
+        this( number, "", "", false, false );
     }
     
     /**
@@ -34,7 +34,7 @@ public class Cardinality {
      * @param order
      */
     public Cardinality( final String number, final String order ){
-        this( number, order, null, null, null );
+        this( number, order, "", false, false );
     }
 
     public String getDirection() {
@@ -61,12 +61,31 @@ public class Cardinality {
     public String toString(){
         StringBuilder result = new StringBuilder( "{cardinality=\"" + number +"\"" );
         if( order != null )
-            result.append("order=\"" + order + "\"" );
+            result.append(",order=\"" + order + "\"" );
         if( is_primary != null )
-            result.append("is_primary=\"" + is_primary + "\"" );
+            result.append(",is_primary=\"" + is_primary + "\"" );
         if( is_alternate != null )
-            result.append("is_alternate=\"" + is_alternate + "\"" );
+            result.append(",is_alternate=\"" + is_alternate + "\"" );
         result.append("}");
         return result.toString();
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        boolean result = false;
+        if (obj == this)
+            result = true;
+        else if( obj == null || obj.getClass() != this.getClass() )
+            result = false;
+        else {
+            Cardinality cardinality = (Cardinality) obj;
+            if( cardinality.getDirection().equals(direction)        &&
+                cardinality.getNumber().equals(number)              &&
+                cardinality.getOrder().equals(order)                &&
+                cardinality.getIs_primary().equals(is_primary)      &&
+                cardinality.getIs_alternate().equals(is_alternate)  )
+                result = true;
+        }
+        return result;
     }
 }

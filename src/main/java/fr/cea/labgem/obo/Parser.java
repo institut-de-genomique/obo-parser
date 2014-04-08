@@ -48,11 +48,11 @@ public class Parser {
         final String    isPrimaryToken      = "is_primary";
         final String    isAlternateToken    = "is_alternate";
         final String    directionToken      = "direction";
-        String          number              = null;
-        String          order               = null;
-        Boolean         isPrimary           = null;
-        Boolean         isAlternate         = null;
-        String          direction           = null;
+        String          number              = "";
+        String          order               = "";
+        Boolean         isPrimary           = false;
+        Boolean         isAlternate         = false;
+        String          direction           = "";
         String          tmp                 = null;
         int             cardinatilityPos    = line.indexOf( cardinalityToken );
         int             orderPos            = line.indexOf( orderToken );
@@ -81,7 +81,7 @@ public class Parser {
     }
     
     
-    private void saveTerm(final String id, final String name, final String namespace, final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of ) throws ParseException{
+    private void saveTerm(final String id, final String name, final String namespace, final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
         Term term = null;
         if( namespace.equals("reaction") )
             term = new UCR( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
@@ -90,7 +90,7 @@ public class Parser {
         else if( namespace.equals("linear_sub_pathway") )
             term = new ULS( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
         else if( namespace.equals("pathway") )
-            term = new UPA( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
+            term = new UPA( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ), isA, superPathway );
         else if( namespace.equals("compound") )
             term = new UPC( id, name, definition );
         else
@@ -134,6 +134,21 @@ public class Parser {
         
         return new Relation( type, idLeft, cardinality, idRight, name );
     }
+    /**
+     * 
+     * @param type
+     * @param line
+     * @return
+     */
+    private Relation parseRelation( final String type, final String line ){
+        Cardinality     cardinality     = null;
+        String[]        splittedLine    = line.split("!");
+        String          idLeft          = splittedLine[0].trim();
+        String          name            = splittedLine[1].trim();
+        String          idRight         = "";
+        
+        return new Relation( type, idLeft, cardinality, idRight, name );
+    }
     
     
     /**
@@ -155,15 +170,18 @@ public class Parser {
         Set<Relation>   has_input_compound  = new HashSet<Relation>();
         Set<Relation>   has_output_compound = new HashSet<Relation>();
         Set<Relation>   part_of             = new HashSet<Relation>();
+        Relation        isA                 = null;
+        Relation        superPathway        = null;
         final String    tokenInput          = "has_input_compound";
         final String    tokenOutput         = "has_output_compound";
         final String    tokenPartOf         = "part_of";
         final String    tokenIsA            = "is_a";
+        final String    tokenSuperPathway   = "uniprot_super_pathway";
         
         while( line != null ){
             if( line.startsWith("[Term]") ){
                 if( id != null ){
-                    saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of);
+                    saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, superPathway);
                     id                  = null;
                     name                = null;
                     namespace           = null;
@@ -171,6 +189,8 @@ public class Parser {
                     has_input_compound  = new HashSet<Relation>();
                     has_output_compound = new HashSet<Relation>();
                     part_of             = new HashSet<Relation>();
+                    isA                 = null;
+                    superPathway        = null;
                 }
             }
             else if( line.startsWith("id:") )
@@ -188,12 +208,14 @@ public class Parser {
                     has_output_compound.add( parseRelationShip( tokenOutput, line.substring( line.indexOf(tokenOutput) + tokenOutput.length() ).trim() ) );
                 else if( line.contains( tokenPartOf ) )
                     part_of.add( parseRelationShip( tokenPartOf, line.substring( line.indexOf(tokenPartOf) + tokenPartOf.length() ).trim() ) );
-                else if( line.contains( tokenIsA ) )
-                    part_of.add( parseRelationShip( tokenIsA, line.substring( line.indexOf(tokenIsA) + tokenIsA.length() ).trim() ) );
             }
+            else if( line.startsWith( "is_a:" ) )
+               isA = parseRelation( tokenIsA, line.substring( line.indexOf(tokenIsA) + tokenIsA.length() + 1 ).trim() );
+            else if( line.startsWith( "uniprot_super_pathway:" ) )
+                superPathway = parseRelation( tokenSuperPathway, line.substring( line.indexOf(tokenSuperPathway) + tokenSuperPathway.length() + 1 ).trim() );
             line = br.readLine();
         }
-        saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of);
+        saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, superPathway );
         isr.close();
         br.close();
     }

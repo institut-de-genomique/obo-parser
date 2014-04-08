@@ -28,7 +28,16 @@ public class Relation {
      * @param id
      */
     public Relation( final String type, final String id ){
-        this( type, id, null, null, null );
+        this( type, id, null, "", "" );
+    }
+    
+    /**
+     * @param type
+     * @param id
+     * @param cardinality
+     */
+    public Relation( final String type, final String id, final Cardinality cardinality ){
+        this( type, id, cardinality, "", "" );
     }
     
     /**
@@ -37,7 +46,7 @@ public class Relation {
      * @param name
      */
     public Relation( final String type, final String id, String name ){
-        this( type, id, null, null, name );
+        this( type, id, null, "", name );
     }
     
 
@@ -63,13 +72,32 @@ public class Relation {
     
     @Override
     public String toString(){
-        StringBuilder result = new StringBuilder( type + " UPa:" + idLeft );
+        StringBuilder result = new StringBuilder( type + ": " + idLeft );
         if( cardinality != null )
             result.append( " " + cardinality.toString() );
-        if( idRight != null )
-            result.append( " ! UPa:" + idRight );
-        if( name != null )
+        if( idRight != null && ! idRight.isEmpty() )
+            result.append( " ! " + idRight );
+        if( name != null && ! name.isEmpty() )
             result.append( " ! " + name );
         return result.toString();
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        boolean result = false;
+        if (obj == this)
+            result = true;
+        else if( obj == null || obj.getClass() != this.getClass() )
+            result = false;
+        else {
+            Relation relation = (Relation) obj;
+            if( relation.getCardinality().equals(cardinality)   &&
+                relation.getIdLeft().equals(idLeft)             &&
+                relation.getIdRight().equals(idRight)           &&
+                relation.getName().equals(name)                 &&
+                relation.getType().equals(type)                 )
+                result = true;
+        }
+        return result;
     }
 }
