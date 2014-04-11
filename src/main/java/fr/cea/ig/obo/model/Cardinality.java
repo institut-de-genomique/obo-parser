@@ -1,4 +1,4 @@
-package fr.cea.labgem.obo.model;
+package fr.cea.ig.obo.model;
 
 public class Cardinality {
     private final String    number;

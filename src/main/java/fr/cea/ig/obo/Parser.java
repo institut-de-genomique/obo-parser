@@ -1,4 +1,4 @@
-package fr.cea.labgem.obo;
+package fr.cea.ig.obo;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -11,16 +11,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import fr.cea.labgem.obo.model.Cardinality;
-import fr.cea.labgem.obo.model.Relation;
-import fr.cea.labgem.obo.model.Relations;
-import fr.cea.labgem.obo.model.Term;
-import fr.cea.labgem.obo.model.TermRelations;
-import fr.cea.labgem.obo.model.UCR;
-import fr.cea.labgem.obo.model.UER;
-import fr.cea.labgem.obo.model.ULS;
-import fr.cea.labgem.obo.model.UPA;
-import fr.cea.labgem.obo.model.UPC;
+import fr.cea.ig.obo.model.Cardinality;
+import fr.cea.ig.obo.model.Relation;
+import fr.cea.ig.obo.model.Relations;
+import fr.cea.ig.obo.model.Term;
+import fr.cea.ig.obo.model.TermRelations;
+import fr.cea.ig.obo.model.UCR;
+import fr.cea.ig.obo.model.UER;
+import fr.cea.ig.obo.model.ULS;
+import fr.cea.ig.obo.model.UPA;
+import fr.cea.ig.obo.model.UPC;
 
 public class Parser {
     private static int PAGE_SIZE            = 4_096;

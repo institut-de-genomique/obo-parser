@@ -1,4 +1,4 @@
-package fr.cea.labgem.obo.model;
+package fr.cea.ig.obo.model;
 
 // Compound
 public class UPC extends Term {

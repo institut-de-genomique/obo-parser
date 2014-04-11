@@ -1,11 +1,11 @@
-package fr.cea.labgem.obo;
+package fr.cea.ig.obo;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import fr.cea.labgem.obo.model.Term;
+import fr.cea.ig.obo.model.Term;
 
 public class Node{
     private Set<Node>   nodes;

@@ -12,11 +12,13 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.cea.labgem.obo.model.Cardinality;
-import fr.cea.labgem.obo.model.Relation;
-import fr.cea.labgem.obo.model.Term;
-import fr.cea.labgem.obo.model.ULS;
-import fr.cea.labgem.obo.model.UPA;
+import fr.cea.ig.obo.Node;
+import fr.cea.ig.obo.Parser;
+import fr.cea.ig.obo.model.Cardinality;
+import fr.cea.ig.obo.model.Relation;
+import fr.cea.ig.obo.model.Term;
+import fr.cea.ig.obo.model.ULS;
+import fr.cea.ig.obo.model.UPA;
 
 public class TestParser extends TestCase {
     
