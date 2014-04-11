@@ -99,4 +99,7 @@ public class Node{
         return getSubTerms( -1, 0 );
     }
     
+    public boolean hasSubNode() {
+        return nodes.size() > 0;
+    }
 }

@@ -60,12 +60,12 @@ public class Cardinality {
     @Override
     public String toString(){
         StringBuilder result = new StringBuilder( "{cardinality=\"" + number +"\"" );
-        if( order != null )
+        if( order != null && ! order.isEmpty() )
             result.append(",order=\"" + order + "\"" );
-        if( is_primary != null )
-            result.append(",is_primary=\"" + is_primary + "\"" );
-        if( is_alternate != null )
-            result.append(",is_alternate=\"" + is_alternate + "\"" );
+        if( is_primary != null && is_primary == true )
+            result.append( ",is_primary=\"True\"" );
+        if( is_alternate != null && is_alternate == true )
+            result.append( ",is_alternate=\"True\"" );
         result.append("}");
         return result.toString();
     }
