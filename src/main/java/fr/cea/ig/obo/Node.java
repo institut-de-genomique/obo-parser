@@ -8,8 +8,8 @@ import java.util.Set;
 import fr.cea.ig.obo.model.Term;
 
 public class Node{
-    private Set<Node>   nodes;
-    private Term        term;
+    private List<List<Node>>          variants;
+    private Term                term;
     
     /**
      * @param depth
@@ -21,85 +21,149 @@ public class Node{
         int             indent      = indentSize * depth;
         StringBuilder   result      = new StringBuilder();
         String          indenter    = new String(new char[indent]).replace("\0", " ");
+        boolean         needToAddOr = false;
         
         result.append( indenter + "-" + child.getTerm().getId() + "\n");
         
-        for( Node node : child.getNodes() )
-            result.append( recurseNode( depth + 1, node ) );
+        for( List<Node> nodes : child.getVariants() ){
+            if( ! needToAddOr ){
+                needToAddOr = true;
+            }
+            else{
+                result.append( indenter + "Or\n" );
+                needToAddOr = false;
+            }
+            for( Node node : nodes ){
+                result.append( recurseNode( depth + 1, node ) );
+            }
+        }
         return result.toString();
     }
     
+    private static int find( final String termNameToFind, final List<Node> nodes ){
+        int     index       = -1;
+        boolean isSearching = true;
+        while( isSearching ){
+            if( index < nodes.size() ){
+                final Node      node        = nodes.get(index);
+                final Term      term        = node.getTerm();
+                final String    termName    = term.getName();
+                if( ! termName.equals( termNameToFind ) )
+                    index++;
+                else
+                    isSearching = false;
+            }
+            else{
+                isSearching = false;
+                index       = -1;
+            }
+        }
+        return index;
+    }
+    
+    private static boolean has(final String termName, final List<List<Node>> nodes ){
+        boolean isFound     = false;
+        boolean isSearching = true;
+        int     variantIndex= 0;
+        int     nodeIndex   = 0;
+        while( isSearching ){
+            if( variantIndex < nodes.size()){
+                nodeIndex = find(termName, nodes.get(variantIndex));
+                if( nodeIndex == -1 )
+                    variantIndex++;
+                else{
+                    isSearching = false;
+                    isFound     = true;
+                }
+            }
+            else
+                isSearching = false;
+        }
+        return isFound;
+    }
+    
     /**
-     * @param nodes
      * @param term
+     * @param nodes
      */
-    public Node( HashSet<Node> nodes, Term term ){
-        this.nodes = nodes;
-        this.term  = term;
+    public Node( Term term, List<List<Node>> nodes ){
+        this.variants   = nodes;
+        this.term       = term;
     }
     
     /**
      * @param term
      */
     public Node( Term term ){
-        this( new HashSet<Node>(), term );
+        this( term, new ArrayList<List<Node>>() );
     }
 
     public Term getTerm() {
         return term;
     }
 
-    public Set<Node> getNodes() {
-        return nodes;
+    public List<List<Node>> setVariants( List<List<Node>> variants ) {
+        return this.variants = variants;
+    }
+    public List<List<Node>> getVariants() {
+        return variants;
+    }
+
+    public void addNode( final int index, final Node node ){ 
+        if( index >= 0 && index < variants.size() )
+            variants.get( index ).add( node );
+        else
+            throw new IndexOutOfBoundsException();
     }
     
-    public void addNode( Node node ){
-        nodes.add( node );
+    public void insertNode( final String termName, final Node node ){
+        int     variantIndex= 0;
+        int     nodeIndex   = 0;
+        boolean isSearching = true;
+        boolean isFound     = false;
+        
+        while( isSearching ){
+            if( variantIndex < variants.size() ){
+                nodeIndex = find(termName, variants.get(variantIndex));
+                if( nodeIndex == -1 )
+                    variantIndex++;
+                else{
+                    isSearching = false;
+                    isFound     = true;
+                    variants.get( variantIndex ).add( nodeIndex, node );
+                }
+            }
+            else
+                isSearching = false;
+        }
+        if( ! isFound )
+            throw new IndexOutOfBoundsException("Term named: " + termName + " was not found");
     }
+    
+    public boolean has( final String termName ){
+        return has( termName, variants );
+    }
+    
     
     @Override
     public String toString(){
         StringBuilder   str         = new StringBuilder( term.getId() + "\n" );
-        for( Node node : nodes )
-            str.append( recurseNode(1, node) );
+        boolean         needToAddOr = false;
+        for( List<Node> variant : variants ){
+            if( ! needToAddOr ){
+                needToAddOr = true;
+            }
+            else{
+                str.append( "    Or\n" );
+                needToAddOr = false;
+            }
+            for( Node node : variant )
+                str.append( recurseNode(1, node) );
+        }
         return str.toString();
     }
     
-    /**
-     * 
-     * @param depth Get term until depth x. Depth equal to -1 involve to get all sub terms.
-     * @return A List of sub term from given Node
-     */
-    public List<Term> getSubTerms( final int maxDepth, final int currentDepth ){
-        List<Term>  result          = new ArrayList<Term>( );
-        boolean needGoingInDepth    = false;
-        
-        result.add( term );
-        
-        if ( nodes == null )
-            needGoingInDepth = false;
-        else if( maxDepth == -1 )
-            needGoingInDepth = true;
-        else if ( currentDepth < maxDepth )
-            needGoingInDepth = true;
-        
-        if( needGoingInDepth ){
-            for( Node node : nodes )
-                result.addAll( node.getSubTerms(maxDepth, currentDepth + 1) );
-        }
-        
-        return result;
-    }
-    
-    public List<Term> getSubTerms( final int maxDepth ){
-        return getSubTerms( maxDepth, 0 );
-    }
-    
-    public List<Term> getSubTerms( ){
-        return getSubTerms( -1, 0 );
-    }
-    
     public boolean hasSubNode() {
-        return nodes.size() > 0;
+        return variants.size() > 0;
     }
 }

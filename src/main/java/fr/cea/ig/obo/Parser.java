@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -149,6 +153,48 @@ public class Parser {
         
         return new Relation( type, idLeft, cardinality, idRight, name );
     }
+
+    private void addItemToEachSubList( List<List<TermRelations>> variantsList, final TermRelations term ){ // by ref ?
+        boolean isRunning           = true;
+        int     index               = 0;
+        List<TermRelations> variants= null;
+        while( isRunning ){
+            if( index < variantsList.size()){
+                variants = variantsList.get( index );
+                addItemToSubList( variants, term );
+                ++index;
+            }
+            else
+                isRunning = false;
+        }
+    }
+    private void addItemToSubList( List<TermRelations> variantList, final TermRelations term){ // by ref ?
+        boolean         isRunning   = true;
+        int             index       = 0;
+        TermRelations   variant     = null;
+        try {
+        while( isRunning ){
+            if( index < variantList.size()){
+                variant = variantList.get( index );
+                if( variant.isLinked( term ) ){
+                    if( variant.isBefore( term ))
+                        variantList.add( index, term );
+                    else
+                        variantList.add( index + 1, term );
+                    isRunning = false;
+                }
+                ++index;
+            }
+            else
+                isRunning = false;
+        }
+        
+        if( index >= variantList.size() )
+            variantList.add( variant );
+        } catch( Exception e ){
+            System.out.println(e);
+        }
+    }
     
     
     /**
@@ -238,26 +284,60 @@ public class Parser {
     public Term getTerm( final String id ){
         return terms.get( id );
     }
+
+    public List<List<TermRelations>> findTermPartOf( final String id ){
+        return findTermPartOf(  terms.get( id ) );
+    }
     
-    
-    /**
-     * @param id
-     * @return
-     */
-    public Node getTerms( final String id ){
-        Term head = terms.get( id );
-        Node root = new Node( head );
-        for( String key : terms.keySet() ){
-            
-            Term term = terms.get( key );
-            if( term instanceof TermRelations ){
-                Relations relations = ((TermRelations) term).getRelations();
-                if( relations != null && relations.isPartOf( id )){
-                    Node child = getTerms( term.getId() );
-                    root.addNode( child );
+    public List<List<TermRelations>> findTermPartOf( final Term term){
+        List<List<TermRelations>>       variantsList= new ArrayList<List<TermRelations>>();
+        List<TermRelations>             variantsSeen= new ArrayList<TermRelations>();
+        boolean                         isLinked    = false;
+        TermRelations                   itemSeen    = null;
+        Iterator<TermRelations>         iter        = null;
+        boolean                         isRunning   = true;
+        
+        for( final Term item  : terms.values() ){
+            if( item instanceof TermRelations && ((TermRelations)item).isPartOf( term ) ){
+                isLinked    = false;
+                isRunning   = true;
+                iter        =  variantsSeen.iterator();
+                while( isRunning ){
+                    if( iter.hasNext() ){
+                        itemSeen = iter.next();
+                        if( itemSeen.isLinked( (TermRelations)item ) ){
+                            addItemToEachSubList( variantsList, (TermRelations)item );
+                            isLinked    = true;
+                            isRunning   = false;
+                        }
+                    }
+                    else
+                        isRunning = false;
+                }
+                if( ! isLinked ){
+                    variantsSeen.add( (TermRelations)item );
+                    variantsList.add( new ArrayList<TermRelations>( Arrays.asList( (TermRelations)item ) ) );
                 }
             }
         }
-        return root;
+        return variantsList;
+    }
+        
+    public Node getTreeTerms( final String id ){
+        return getTreeTerms( terms.get( id ) );
+    }
+
+    public Node getTreeTerms(Term term) {
+        List<List<Node>>    variants    = new ArrayList<List<Node>>();
+        List<Node>          tmp         = new ArrayList<Node>();
+        for(List<TermRelations> variantsList : findTermPartOf( term ) ){
+            tmp = new ArrayList<Node>();
+            for( TermRelations termRelations : variantsList ){
+                Node child = getTreeTerms( termRelations );
+                tmp.add( child );
+            }
+            variants.add( tmp );
+        }
+        return new Node( term, variants );
     }
 }
