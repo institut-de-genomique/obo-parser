@@ -2,9 +2,9 @@ package fr.cea.ig.obo.model;
 
 public abstract class Term {
 
-    private final String id;
-    private final String name;
-    private final String definition;
+    protected final String id;
+    protected final String name;
+    protected final String definition;
 
     /**
      * @param id
@@ -41,15 +41,15 @@ public abstract class Term {
         String result = null;
         final String className = this.getClass().getCanonicalName();
         
-        if ("fr.cea.labgem.obo.model.UCR".equals(className))
+        if ("fr.cea.ig.obo.model.UCR".equals(className))
             result= "reaction";
-        else if ("fr.cea.labgem.obo.model.UER".equals(className))
+        else if ("fr.cea.ig.obo.model.UER".equals(className))
             result= "enzymatic_reaction";
-        else if ("fr.cea.labgem.obo.model.ULS".equals(className))
+        else if ("fr.cea.ig.obo.model.ULS".equals(className))
             result= "linear_sub_pathway";
-        else if ("fr.cea.labgem.obo.model.UPA".equals(className))
+        else if ("fr.cea.ig.obo.model.UPA".equals(className))
             result= "pathway";
-        else if ("fr.cea.labgem.obo.model.UPC".equals(className))
+        else if ("fr.cea.ig.obo.model.UPC".equals(className))
             result= "compound";
         
         return result;

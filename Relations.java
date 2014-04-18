@@ -67,6 +67,14 @@ public class Relations {
     public boolean isPartOf( final String id ){
         return hasCompound(part_of, id);
     }
+    
+    public boolean hasInputCompound( final String id ){
+        return hasCompound(input_compound, id);
+    }
+    
+    public boolean hasOutputCompound( final String id ){
+        return hasCompound(output_compound, id, false);
+    }
 
 
     @Override

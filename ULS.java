@@ -1,6 +1,7 @@
 package fr.cea.ig.obo.model;
 
 
+
 // Linear Sub-pathway
 public class ULS extends TermRelations {
     
