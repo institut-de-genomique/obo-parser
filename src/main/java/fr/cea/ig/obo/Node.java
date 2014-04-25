@@ -1,16 +1,18 @@
 package fr.cea.ig.obo;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import fr.cea.ig.obo.model.Term;
+import fr.cea.ig.obo.model.Variant;
 
-public class Node{
-    private List<List<Node>>          variants;
-    private Term                term;
-    
+public class Node implements Iterable<Variant> {
+
+    private List<Variant>   variants;
+    private Term            term;
+
+
     /**
      * @param depth
      * @param child
@@ -18,14 +20,14 @@ public class Node{
      */
     private String recurseNode( final int depth, final Node child ){
         final int       indentSize  = 4;
-        int             indent      = indentSize * depth;
+        final int       indent      = indentSize * depth;
         StringBuilder   result      = new StringBuilder();
         String          indenter    = new String(new char[indent]).replace("\0", " ");
         boolean         needToAddOr = false;
         
         result.append( indenter + "-" + child.getTerm().getId() + "\n");
         
-        for( List<Node> nodes : child.getVariants() ){
+        for( Variant nodes : child.getVariants() ){
             if( ! needToAddOr ){
                 needToAddOr = true;
             }
@@ -39,75 +41,55 @@ public class Node{
         }
         return result.toString();
     }
-    
-    private static int find( final String termNameToFind, final List<Node> nodes ){
-        int     index       = -1;
-        boolean isSearching = true;
-        while( isSearching ){
-            if( index < nodes.size() ){
-                final Node      node        = nodes.get(index);
-                final Term      term        = node.getTerm();
-                final String    termName    = term.getName();
-                if( ! termName.equals( termNameToFind ) )
-                    index++;
-                else
-                    isSearching = false;
-            }
-            else{
-                isSearching = false;
-                index       = -1;
-            }
-        }
-        return index;
-    }
-    
-    private static boolean has(final String termName, final List<List<Node>> nodes ){
-        boolean isFound     = false;
-        boolean isSearching = true;
-        int     variantIndex= 0;
-        int     nodeIndex   = 0;
-        while( isSearching ){
-            if( variantIndex < nodes.size()){
-                nodeIndex = find(termName, nodes.get(variantIndex));
-                if( nodeIndex == -1 )
-                    variantIndex++;
-                else{
-                    isSearching = false;
-                    isFound     = true;
-                }
-            }
-            else
-                isSearching = false;
-        }
-        return isFound;
-    }
-    
+
+
     /**
      * @param term
      * @param nodes
      */
-    public Node( Term term, List<List<Node>> nodes ){
+    public Node( final Term term, final List<Variant> nodes ){
         this.variants   = nodes;
         this.term       = term;
     }
-    
+
+
     /**
      * @param term
      */
-    public Node( Term term ){
-        this( term, new ArrayList<List<Node>>() );
+    public Node( final Term term ){
+        this( term, new ArrayList<Variant>() );
     }
+
 
     public Term getTerm() {
         return term;
     }
 
-    public List<List<Node>> setVariants( List<List<Node>> variants ) {
+
+    public String getId(){
+        return term.getId();
+    }
+
+
+    public String getName() {
+        return term.getName();
+    }
+
+
+    public String getDefinition() {
+        return term.getDefinition();
+    }
+
+
+    public List<Variant> setVariants( final List<Variant> variants ) {
         return this.variants = variants;
     }
-    public List<List<Node>> getVariants() {
+
+
+    public List<Variant> getVariants() {
         return variants;
     }
+
 
     public void addNode( final int index, final Node node ){ 
         if( index >= 0 && index < variants.size() )
@@ -115,8 +97,9 @@ public class Node{
         else
             throw new IndexOutOfBoundsException();
     }
-    
-    public void insertNode( final String termName, final Node node ){
+
+
+    public void insertNode( final String termId, final Node node ){
         int     variantIndex= 0;
         int     nodeIndex   = 0;
         boolean isSearching = true;
@@ -124,7 +107,7 @@ public class Node{
         
         while( isSearching ){
             if( variantIndex < variants.size() ){
-                nodeIndex = find(termName, variants.get(variantIndex));
+                nodeIndex =  variants.get( variantIndex ).countUntil( termId );
                 if( nodeIndex == -1 )
                     variantIndex++;
                 else{
@@ -137,19 +120,47 @@ public class Node{
                 isSearching = false;
         }
         if( ! isFound )
-            throw new IndexOutOfBoundsException("Term named: " + termName + " was not found");
+            throw new IndexOutOfBoundsException("Term id: " + termId + " was not found");
     }
-    
-    public boolean has( final String termName ){
-        return has( termName, variants );
+
+
+    public boolean has( final String termId ){
+        boolean             result      = false;
+        boolean             isRunning   = true;
+        Iterator<Variant>   iter        = variants.iterator();
+        Variant             variant     = null;
+        
+        while( isRunning ){
+            if( iter.hasNext() ){
+                variant = iter.next();
+                if( variant.has( termId ) ){
+                    isRunning   = false;
+                    result      = true;
+                }
+            }
+            else
+                isRunning = false;
+        }
+        return result;
     }
-    
-    
+
+
+    @Override
+    public Iterator<Variant> iterator() {
+        return variants.iterator();
+    }
+
+
+    public Variant get( final int index ){
+        return variants.get( index );
+    }
+
+
     @Override
     public String toString(){
         StringBuilder   str         = new StringBuilder( term.getId() + "\n" );
         boolean         needToAddOr = false;
-        for( List<Node> variant : variants ){
+        for( Variant variant : variants ){
             if( ! needToAddOr ){
                 needToAddOr = true;
             }
@@ -161,9 +172,5 @@ public class Node{
                 str.append( recurseNode(1, node) );
         }
         return str.toString();
-    }
-    
-    public boolean hasSubNode() {
-        return variants.size() > 0;
     }
 }

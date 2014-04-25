@@ -1,5 +1,6 @@
 package fr.cea.ig.obo.model;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -13,7 +14,8 @@ public class Relations {
     private boolean hasCompound( final Set<Relation> relations, final String id ){
         return hasCompound( relations, id, true );
     }
-    
+
+
     private boolean hasCompound( final Set<Relation> relations, final String id, final boolean isLeftId ){
         boolean             isPresent   = false;
         boolean             isSearching = true;
@@ -38,6 +40,7 @@ public class Relations {
         return isPresent;
     }
 
+
     /**
      * @param input
      * @param output
@@ -48,6 +51,12 @@ public class Relations {
         this.input_compound     = input;
         this.output_compound    = output;
         this.part_of            = part_of;
+    }
+    
+    public Relations(){
+        this.input_compound     = new HashSet<Relation>();
+        this.output_compound    = new HashSet<Relation>();
+        this.part_of            = new HashSet<Relation>();
     }
 
     public Set<Relation> getInputCompound() {
@@ -63,15 +72,18 @@ public class Relations {
     public Set<Relation> getPartOf() {
         return part_of;
     }
-    
+
+
     public boolean isPartOf( final String id ){
         return hasCompound(part_of, id);
     }
-    
+
+
     public boolean hasInputCompound( final String id ){
         return hasCompound(input_compound, id);
     }
-    
+
+
     public boolean hasOutputCompound( final String id ){
         return hasCompound(output_compound, id, false);
     }

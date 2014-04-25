@@ -8,12 +8,18 @@ import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 import fr.cea.ig.obo.model.Cardinality;
 import fr.cea.ig.obo.model.Relation;
@@ -25,12 +31,14 @@ import fr.cea.ig.obo.model.UER;
 import fr.cea.ig.obo.model.ULS;
 import fr.cea.ig.obo.model.UPA;
 import fr.cea.ig.obo.model.UPC;
+import fr.cea.ig.obo.model.Variant;
 
 public class Parser {
     private static int PAGE_SIZE            = 4_096;
     private static int DEFAULT_NUMBER_PAGE  = 10; 
     private Map<String,Term> terms;
-    
+
+
     private String extractQuotedString( final String line ){
         String result = null;
         int quoteStart= line.indexOf("\"");
@@ -45,7 +53,8 @@ public class Parser {
         
         return result;
     }
-    
+
+
     private Cardinality parseCardinality( final String line ){
         final String    cardinalityToken    = "cardinality";
         final String    orderToken          = "order";
@@ -84,8 +93,7 @@ public class Parser {
         return new Cardinality( number, order, direction, isPrimary, isAlternate );
     }
     
-    
-    private void saveTerm(final String id, final String name, final String namespace, final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
+    private static Term termFactory(final String id, final String name, final String namespace, final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
         Term term = null;
         if( namespace.equals("reaction") )
             term = new UCR( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
@@ -99,10 +107,47 @@ public class Parser {
             term = new UPC( id, name, definition );
         else
             throw new ParseException("Unknown namespace: " + namespace, -1 );
-        terms.put(id, term);
+        return term;
     }
-    
-    
+
+
+    private void saveTerm(final String id, final String name, final String namespace, final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
+        Term term = termFactory( id, name, namespace, definition, has_input_compound, has_output_compound,  part_of, isA, superPathway );
+        boolean isTermWithRelation = true;
+        if( term instanceof UPC )
+            isTermWithRelation = false;
+        
+        if( isTermWithRelation ){
+            
+            Set<Relation> relations = ((TermRelations) term).getRelation("part_of");
+            TermRelations parent    = null;
+            
+            for( Relation relation : relations ){
+                
+                parent =  (TermRelations) terms.get( relation.getIdLeft() );
+                
+                if( parent != null )
+                    parent.add( term );
+                else{
+                    parent = new TermRelations( relation.getIdLeft(),"", "" );
+                    parent.add( term );
+                    terms.put(relation.getIdLeft(), parent);
+                }
+            }
+            
+            Term termRelation = terms.get( id );
+            if( termRelation != null ){
+                List<List<Term>> childs = ((TermRelations) termRelation).getChilds();
+                ((TermRelations) term).addAll( childs );
+            }
+            
+            terms.put(id, term);
+        }
+        else
+            terms.put(id, term);
+    }
+
+
     /**
      * @param type
      * @param line
@@ -138,6 +183,8 @@ public class Parser {
         
         return new Relation( type, idLeft, cardinality, idRight, name );
     }
+
+
     /**
      * 
      * @param type
@@ -154,49 +201,7 @@ public class Parser {
         return new Relation( type, idLeft, cardinality, idRight, name );
     }
 
-    private void addItemToEachSubList( List<List<TermRelations>> variantsList, final TermRelations term ){ // by ref ?
-        boolean isRunning           = true;
-        int     index               = 0;
-        List<TermRelations> variants= null;
-        while( isRunning ){
-            if( index < variantsList.size()){
-                variants = variantsList.get( index );
-                addItemToSubList( variants, term );
-                ++index;
-            }
-            else
-                isRunning = false;
-        }
-    }
-    private void addItemToSubList( List<TermRelations> variantList, final TermRelations term){ // by ref ?
-        boolean         isRunning   = true;
-        int             index       = 0;
-        TermRelations   variant     = null;
-        try {
-        while( isRunning ){
-            if( index < variantList.size()){
-                variant = variantList.get( index );
-                if( variant.isLinked( term ) ){
-                    if( variant.isBefore( term ))
-                        variantList.add( index, term );
-                    else
-                        variantList.add( index + 1, term );
-                    isRunning = false;
-                }
-                ++index;
-            }
-            else
-                isRunning = false;
-        }
-        
-        if( index >= variantList.size() )
-            variantList.add( variant );
-        } catch( Exception e ){
-            System.out.println(e);
-        }
-    }
-    
-    
+
     /**
      * @param path
      * @param numberPage
@@ -225,7 +230,19 @@ public class Parser {
         final String    tokenSuperPathway   = "uniprot_super_pathway";
         
         while( line != null ){
-            if( line.startsWith("[Term]") ){
+            if( line.startsWith("[Typedef]") ){
+                line                = br.readLine();
+                boolean isRunning   = true;
+                while( isRunning ){
+                    if( line == null )
+                        isRunning   = false;
+                    else if( line.equals("") )
+                        isRunning   = false;
+                    else
+                        line = br.readLine();
+                }
+            }
+            else if( line.startsWith("[Term]") ){
                 if( id != null ){
                     saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, superPathway);
                     id                  = null;
@@ -265,8 +282,8 @@ public class Parser {
         isr.close();
         br.close();
     }
-    
-    
+
+
     /**
      * @param path
      * @throws ParseException
@@ -275,8 +292,8 @@ public class Parser {
     public Parser( final String path ) throws ParseException, IOException {
         this( path, DEFAULT_NUMBER_PAGE );
     }
-    
-    
+
+
     /**
      * @param id
      * @return
@@ -285,59 +302,13 @@ public class Parser {
         return terms.get( id );
     }
 
-    public List<List<TermRelations>> findTermPartOf( final String id ){
-        return findTermPartOf(  terms.get( id ) );
-    }
-    
-    public List<List<TermRelations>> findTermPartOf( final Term term){
-        List<List<TermRelations>>       variantsList= new ArrayList<List<TermRelations>>();
-        List<TermRelations>             variantsSeen= new ArrayList<TermRelations>();
-        boolean                         isLinked    = false;
-        TermRelations                   itemSeen    = null;
-        Iterator<TermRelations>         iter        = null;
-        boolean                         isRunning   = true;
-        
-        for( final Term item  : terms.values() ){
-            if( item instanceof TermRelations && ((TermRelations)item).isPartOf( term ) ){
-                isLinked    = false;
-                isRunning   = true;
-                iter        =  variantsSeen.iterator();
-                while( isRunning ){
-                    if( iter.hasNext() ){
-                        itemSeen = iter.next();
-                        if( itemSeen.isLinked( (TermRelations)item ) ){
-                            addItemToEachSubList( variantsList, (TermRelations)item );
-                            isLinked    = true;
-                            isRunning   = false;
-                        }
-                    }
-                    else
-                        isRunning = false;
-                }
-                if( ! isLinked ){
-                    variantsSeen.add( (TermRelations)item );
-                    variantsList.add( new ArrayList<TermRelations>( Arrays.asList( (TermRelations)item ) ) );
-                }
-            }
-        }
-        return variantsList;
-    }
-        
+
     public Node getTreeTerms( final String id ){
         return getTreeTerms( terms.get( id ) );
     }
 
+
     public Node getTreeTerms(Term term) {
-        List<List<Node>>    variants    = new ArrayList<List<Node>>();
-        List<Node>          tmp         = new ArrayList<Node>();
-        for(List<TermRelations> variantsList : findTermPartOf( term ) ){
-            tmp = new ArrayList<Node>();
-            for( TermRelations termRelations : variantsList ){
-                Node child = getTreeTerms( termRelations );
-                tmp.add( child );
-            }
-            variants.add( tmp );
-        }
-        return new Node( term, variants );
+        return null;
     }
 }
