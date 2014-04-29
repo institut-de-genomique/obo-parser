@@ -1,46 +1,84 @@
 package fr.cea.ig.obo.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
-import fr.cea.ig.obo.Node;
-
-public class Variant implements Iterable<Node> {
+public class Variant implements Iterable<TermRelations> {
 
     private static long idCounter = 1L;
     
-    private long id;
-    private List<Node>      nodesList;
-    private Set<String>     termVariant;
-    //private Set<Integer>  variants;
+    private long                id;
+    private List<TermRelations> childs;
+    private Set<String>         termVariant;
+
+    /**
+     * getVariant is a function which convert a two dimensional list of terms
+     * which are part of another term to a list of each possible way using 
+     * Disjunctive normal form.
+     * Result is wrote into variable named variantsList as this function used
+     * his reference
+     * @param terms two dimensional list, the second dimension tell which term is possible to find
+     * @param variantsList convert terms to Disjunctive normal form.
+     * @param line current position into terms list
+     * @param column current position into terms list
+     * @return
+     */
+    public static void getVariant( final List<List<TermRelations>> terms, List<Variant> variantsList ){
+        getVariant( terms, variantsList, 0, 0 );
+    }
+    private static void getVariant( final List<List<TermRelations>> terms, List<Variant> variantsList, final int line , final int column ){
+        Variant variant  = null;
+        if(  line < terms.size() && column < terms.get(line).size() ){
+            if( variantsList.size() > 0 ){
+                ArrayList<TermRelations> r = new ArrayList<TermRelations>( variantsList.get( variantsList.size() - 1 ).getTerms() );
+                variant = new Variant( r );
+                variantsList.get( variantsList.size() - 1 ).add( terms.get(line).get(column) );
+            }
+            else{
+                variant  = new Variant( );;
+                variantsList.add( new Variant( terms.get(line).get(column) ) );
+            }
+            if( line+1 < terms.size() )
+                getVariant( terms, variantsList, line+1, 0 );
+            if( line < terms.size() && column+1 < terms.get(line).size() ){
+                variantsList.add( variant );
+                getVariant( terms, variantsList, line, column+1 );
+            }
+        }
+    }
 
 
     public Variant( ){
         id          = idCounter++;
-        nodesList   = new ArrayList<Node>();
+        childs      = new ArrayList<TermRelations>();
     }
 
 
-    public Variant( final List<Node> termList ){
+    public Variant( final TermRelations term ){
         id          = idCounter++;
-        nodesList   = termList;
+        childs      = new ArrayList<TermRelations>( Arrays.asList( term ) );
+    }
+
+    public Variant( final List<TermRelations> termList ){
+        id          = idCounter++;
+        childs      = termList;
     }
 
 
-    public Variant( final List<Node> termList, Set<String> variantId  ){
+    public Variant( final List<TermRelations> termList, Set<String> variantId  ){
         id          = idCounter++;
-        nodesList   = termList;
+        childs      = termList;
         termVariant = variantId;
     }
 
 
     public boolean hasVariantOf( final TermRelations term ) {
-        boolean         result      = termVariant.contains( term.getId() );
-        boolean         isRunning   = true;
-        Iterator<Node>  iter        = nodesList.iterator();
+        boolean         result          = termVariant.contains( term.getId() );
+        boolean         isRunning       = true;
+        Iterator<TermRelations>  iter  = childs.iterator();
         TermRelations   currentTerm = null;
         
         if( ! result ){
@@ -49,7 +87,7 @@ public class Variant implements Iterable<Node> {
                 
                 if( iter.hasNext() ){
                     
-                    currentTerm = (TermRelations) iter.next().getTerm();
+                    currentTerm = (TermRelations) iter.next();
                     
                     if( term.isVariantOf( currentTerm ) ){
                         result      = true;
@@ -72,36 +110,57 @@ public class Variant implements Iterable<Node> {
     }
 
 
-    public void add ( final int position, final Node node ){ // maybe check if node is not a variant and raise an error if it is
-        nodesList.add(position, node);
+    public void add ( final int position, final TermRelations node ){ // maybe check if node is not a variant and raise an error if it is
+        childs.add(position, node);
     }
 
 
-    public void add ( Node node ){
-        nodesList.add( node );
+    public void add ( final TermRelations term ){
+        childs.add( term );
+    }
+
+
+    public void addAll ( final List<TermRelations> terms ){
+        childs.addAll( terms );
+    }
+
+
+    public Set<String> getTermVariant() {
+        return termVariant;
+    }
+
+
+    public void addAll ( final Variant variant ){
+        childs.addAll( variant.getTerms() );
+        termVariant.addAll( variant.getTermVariant() );
+    }
+
+
+    public List<TermRelations> getTerms() {
+        return childs;
     }
 
 
     @Override
-    public Iterator<Node> iterator() {
-        return nodesList.iterator();
+    public Iterator<TermRelations> iterator() {
+        return childs.iterator();
     }
 
 
-    public Node get( final int index ){
-        return nodesList.get( index );
+    public TermRelations get( final int index ){
+        return childs.get( index );
     }
 
 
     public boolean has( final String termId ){
-        boolean         isRunning   = true;
-        boolean         isPresent   = false;
-        Iterator<Node>  iter        = nodesList.iterator();
+        boolean                 isRunning   = true;
+        boolean                 isPresent   = false;
+        Iterator<TermRelations>  iter       = childs.iterator();
         TermRelations   currentTerm = null;
         
         while( isRunning ){
             if ( iter.hasNext() ){
-                currentTerm = (TermRelations) iter.next().getTerm();
+                currentTerm = (TermRelations) iter.next();
                 if( currentTerm.getId().equals( termId ) ){
                     isRunning   = false;
                     isPresent   = true;
@@ -115,18 +174,18 @@ public class Variant implements Iterable<Node> {
     }
 
 
-    public Node find( final String termId ){
-        Node            result      = null;
-        boolean         isRunning   = true;
-        Iterator<Node>  iter        = nodesList.iterator();
-        Node            node        = null;
+    public TermRelations find( final String termId ){
+        TermRelations           result      = null;
+        boolean                 isRunning   = true;
+        Iterator<TermRelations> iter        = childs.iterator();
+        TermRelations           term        = null;
         
         while( isRunning ){
             if ( iter.hasNext() ){
-                node = iter.next();
-                if( node.getTerm().getId().equals( termId ) ){
+                term = iter.next();
+                if( term.getId().equals( termId ) ){
                     isRunning   = false;
-                    result        = node;
+                    result      = term;
                 }
             }
             else
@@ -138,18 +197,18 @@ public class Variant implements Iterable<Node> {
 
 
     public int countUntil( final String termId ){
-        int             result      = -1;
-        int             currentIndex= 0;
-        boolean         isRunning   = true;
-        Iterator<Node>  iter        = nodesList.iterator();
-        Node            node        = null;
+        int                     result      = -1;
+        int                     currentIndex= 0;
+        boolean                 isRunning   = true;
+        Iterator<TermRelations> iter        = childs.iterator();
+        TermRelations           term        = null;
         
         while( isRunning ){
             if ( iter.hasNext() ){
-                node = iter.next();
-                if( node.getTerm().getId().equals( termId ) ){
+                term = iter.next();
+                if( term.getId().equals( termId ) ){
                     isRunning   = false;
-                    result        = currentIndex;
+                    result      = currentIndex;
                 }
                 else
                     currentIndex++;
@@ -165,23 +224,22 @@ public class Variant implements Iterable<Node> {
     @Override
     public String toString(){
         StringBuilder str = new StringBuilder();
-        for( Node node : nodesList )
-            str.append( node.toString() );
+        for( TermRelations term : childs )
+            str.append( term.toString() );
         return str.toString();
     }
 
 
-
     public int countUntilVariantOf( final TermRelations term ) {
-        int             result      = -1;
-        int             index       = 0;
-        boolean         isSearching = true;
-        Iterator<Node>  iter        = nodesList.iterator();
-        TermRelations   current     = null;
+        int                     result      = -1;
+        int                     index       = 0;
+        boolean                 isSearching = true;
+        Iterator<TermRelations> iter        = childs.iterator();
+        TermRelations           current     = null;
         
         while( isSearching ){
             if( iter.hasNext() ){
-                current = (TermRelations) iter.next().getTerm();
+                current = (TermRelations) iter.next();
                 if( current.isVariantOf(term) ){
                     isSearching = false;
                     result      = index;
@@ -193,5 +251,18 @@ public class Variant implements Iterable<Node> {
                 isSearching = false;
         }
         return result;
+    }
+
+
+    public List<String> getTermId(){
+        List<String>    ids     = new ArrayList<String>( childs.size() );
+        for( TermRelations term : childs )
+            ids.add( term.getId() );
+        return ids;
+    }
+
+
+    public int size(){
+        return childs.size();
     }
 }
