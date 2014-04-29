@@ -6,7 +6,7 @@ import org.junit.runner.notification.Failure;
 
 public class TestRunner {
     public static void main(String[] args) {
-        Result result = JUnitCore.runClasses(TestParser.class);
+        Result result = JUnitCore.runClasses(TestParser.class, TestVariant.class);
         for (Failure failure : result.getFailures()) {
             System.out.println("[NO] " + failure.getTestHeader());
             System.out.println("Test result " + failure.getMessage() + "\n");

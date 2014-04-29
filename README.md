@@ -19,11 +19,11 @@ Usage
 
 ````java
 Parser parser = new Parser( "unipathway.obo" );
-UPA    term   = (UPA) parser.getTerm("UPa:UPA00033");
-ULS    term   = (ULS) parser.getTerm("UPa:ULS00003");
+UPA    term1  = (UPA) parser.getTerm("UPa:UPA00033");
+ULS    term2  = (ULS) parser.getTerm("UPa:ULS00003");
 ````
 
-Each Object come from Term definition see api.
+Each Object inherit from Term definition see api.
 
 
 LICENSE

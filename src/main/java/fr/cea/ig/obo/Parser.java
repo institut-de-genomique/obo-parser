@@ -6,20 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 
 import fr.cea.ig.obo.model.Cardinality;
 import fr.cea.ig.obo.model.Relation;
@@ -31,7 +22,6 @@ import fr.cea.ig.obo.model.UER;
 import fr.cea.ig.obo.model.ULS;
 import fr.cea.ig.obo.model.UPA;
 import fr.cea.ig.obo.model.UPC;
-import fr.cea.ig.obo.model.Variant;
 
 public class Parser {
     private static int PAGE_SIZE            = 4_096;
@@ -300,15 +290,5 @@ public class Parser {
      */
     public Term getTerm( final String id ){
         return terms.get( id );
-    }
-
-
-    public Node getTreeTerms( final String id ){
-        return getTreeTerms( terms.get( id ) );
-    }
-
-
-    public Node getTreeTerms(Term term) {
-        return null;
     }
 }
