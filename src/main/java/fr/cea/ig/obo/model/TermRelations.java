@@ -11,7 +11,7 @@ public class TermRelations extends Term {
     protected final Relations relations;
 
 
-    protected List<List<TermRelations>> childs;
+    protected List<List<Term>> childs;
 
 
     /**
@@ -23,7 +23,7 @@ public class TermRelations extends Term {
     public TermRelations( final String id, final String name, final String definition, Relations relations ) {
         super(id, name, definition );
         this.relations  = relations;
-        this.childs     = new ArrayList<List<TermRelations>>();
+        this.childs     = new ArrayList<List<Term>>();
     }
 
     /**
@@ -34,7 +34,7 @@ public class TermRelations extends Term {
     public TermRelations( final String id, final String name, final String definition ) {
         super(id, name, definition );
         this.relations  = new Relations();
-        this.childs     = new ArrayList<List<TermRelations>>();
+        this.childs     = new ArrayList<List<Term>>();
     }
 
 
@@ -189,14 +189,14 @@ public class TermRelations extends Term {
     }
 
 
-    public void add( final TermRelations term ){
-        boolean                         isSearching = true;
-        Iterator<List<TermRelations>>   iter        = childs.iterator();
-        List<TermRelations>             currentList = null;
-        TermRelations                   currentTerm = null;
+    public void add( final Term term ){
+        boolean                 isSearching = true;
+        Iterator<List<Term>>    iter        = childs.iterator();
+        List<Term>              currentList = null;
+        Term                    currentTerm = null;
         
         if( childs.size() > 0 && childs.get(0).size() > 0 && !(childs.get(0).get(0) instanceof TermRelations) ){
-            childs.add( new ArrayList<TermRelations>( Arrays.asList(term) ) );
+            childs.add( new ArrayList<Term>( Arrays.asList( term ) ) );
             isSearching = false;
         }
         
@@ -204,35 +204,35 @@ public class TermRelations extends Term {
             if( iter.hasNext() ){
                 currentList = iter.next();
                 currentTerm = currentList.get(0);
-                if( currentTerm.isVariantOf( term) ){
+                if( term instanceof TermRelations && ((TermRelations)currentTerm).isVariantOf( (TermRelations)term) ){
                     currentList.add( term );
                     isSearching = false;
                 }
             }
             else{
                 isSearching = false;
-                childs.add( new ArrayList<TermRelations>( Arrays.asList(term) ) );
+                childs.add( new ArrayList<Term>( Arrays.asList(term) ) );
             }
         }
         
     }
 
 
-    public void addAll( final List<List<TermRelations>> terms ){
+    public void addAll( final List<List<Term>> terms ){
         childs.addAll(terms);
     }
 
-    public List<TermRelations> get( final int index ){
+    public List<Term> get( final int index ){
         return childs.get( index );
     }
 
 
-    public Iterator<List<TermRelations>> iterator(){
+    public Iterator<List<Term>> iterator(){
         return childs.iterator();
     }
 
 
-    public List<List<TermRelations>> getChilds() {
+    public List<List<Term>> getChilds() {
         return childs;
     }
 

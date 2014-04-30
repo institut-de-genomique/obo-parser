@@ -41,8 +41,8 @@ public class TestParser extends TestCase {
     
     @Test
     public void testULSVariant() {
-        UPA                         term    = (UPA) parser.getTerm("UPa:UPA00033");
-        List<List<TermRelations>>   childs  = term.getChilds();
+        UPA                term    = (UPA) parser.getTerm("UPa:UPA00033");
+        List<List<Term>>   childs  = term.getChilds();
 
         assertEquals( 2, childs.size() );
         assertEquals( "UPa:ULS00013", childs.get(1).get(0).getId() );

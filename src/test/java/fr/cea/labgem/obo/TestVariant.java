@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import fr.cea.ig.obo.model.Term;
 import fr.cea.ig.obo.model.TermRelations;
 import fr.cea.ig.obo.model.Variant;
 
@@ -16,11 +17,11 @@ public class TestVariant extends TestCase {
     
     @Test
     public void testVariant() {
-        List<List<TermRelations>> terms = new ArrayList<List<TermRelations>>();
-        terms.add( new ArrayList<TermRelations>( Arrays.asList(new TermRelations("1a","1a","1a"), new TermRelations("1b","1b","1b") ) ) );
-        terms.add( new ArrayList<TermRelations>( Arrays.asList(new TermRelations("2a","2a","2a") ) ) );
-        terms.add( new ArrayList<TermRelations>( Arrays.asList(new TermRelations("3a","3a","3a"), new TermRelations("3b","3b","3b") ) ) );
-        terms.add( new ArrayList<TermRelations>( Arrays.asList(new TermRelations("4a","4a","4a"), new TermRelations("4b","4b","4b") ) ) );
+        List<List<Term>> terms = new ArrayList<List<Term>>();
+        terms.add( new ArrayList<Term>( Arrays.asList(new TermRelations("1a","1a","1a"), new TermRelations("1b","1b","1b") ) ) );
+        terms.add( new ArrayList<Term>( Arrays.asList(new TermRelations("2a","2a","2a") ) ) );
+        terms.add( new ArrayList<Term>( Arrays.asList(new TermRelations("3a","3a","3a"), new TermRelations("3b","3b","3b") ) ) );
+        terms.add( new ArrayList<Term>( Arrays.asList(new TermRelations("4a","4a","4a"), new TermRelations("4b","4b","4b") ) ) );
         
         List<Variant> variantsList = new ArrayList<Variant>();
         

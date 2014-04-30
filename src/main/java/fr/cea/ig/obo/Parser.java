@@ -127,7 +127,7 @@ public class Parser {
             
             TermRelations termRelation = (TermRelations) terms.get( id );
             if( termRelation != null ){
-                List<List<TermRelations>> childs =  termRelation.getChilds();
+                List<List<Term>> childs =  termRelation.getChilds();
                 ((TermRelations) term).addAll( childs );
             }
             
