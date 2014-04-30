@@ -265,4 +265,12 @@ public class Variant implements Iterable<TermRelations> {
     public int size(){
         return childs.size();
     }
+
+
+    public List<String> getTermName() {
+        List<String>    names     = new ArrayList<String>( childs.size() );
+        for( TermRelations term : childs )
+            names.add( term.getName() );
+        return names;
+    }
 }
