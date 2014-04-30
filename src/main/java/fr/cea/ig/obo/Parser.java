@@ -117,17 +117,17 @@ public class Parser {
                 parent =  (TermRelations) terms.get( relation.getIdLeft() );
                 
                 if( parent != null )
-                    parent.add( term );
+                    parent.add( (TermRelations)term );
                 else{
                     parent = new TermRelations( relation.getIdLeft(),"", "" );
-                    parent.add( term );
+                    parent.add( (TermRelations)term );
                     terms.put(relation.getIdLeft(), parent);
                 }
             }
             
-            Term termRelation = terms.get( id );
+            TermRelations termRelation = (TermRelations) terms.get( id );
             if( termRelation != null ){
-                List<List<Term>> childs = ((TermRelations) termRelation).getChilds();
+                List<List<TermRelations>> childs =  termRelation.getChilds();
                 ((TermRelations) term).addAll( childs );
             }
             

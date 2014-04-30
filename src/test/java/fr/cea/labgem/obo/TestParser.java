@@ -13,6 +13,7 @@ import fr.cea.ig.obo.Parser;
 import fr.cea.ig.obo.model.Cardinality;
 import fr.cea.ig.obo.model.Relation;
 import fr.cea.ig.obo.model.Term;
+import fr.cea.ig.obo.model.TermRelations;
 import fr.cea.ig.obo.model.ULS;
 import fr.cea.ig.obo.model.UPA;
 
@@ -40,8 +41,8 @@ public class TestParser extends TestCase {
     
     @Test
     public void testULSVariant() {
-        UPA    term    = (UPA) parser.getTerm("UPa:UPA00033");
-        List<List<Term>> childs = term.getChilds();
+        UPA                         term    = (UPA) parser.getTerm("UPa:UPA00033");
+        List<List<TermRelations>>   childs  = term.getChilds();
 
         assertEquals( 2, childs.size() );
         assertEquals( "UPa:ULS00013", childs.get(1).get(0).getId() );
