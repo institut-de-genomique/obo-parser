@@ -4,7 +4,8 @@
   <groupId>fr.cea.ig</groupId>
   <artifactId>obo-parser</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>Parser for obo file format</name>
+  <name>obo-parser</name>
+  <description>Parser for obo file format</description>
   <packaging>jar</packaging>
 
 
@@ -31,5 +32,4 @@
     </dependency>
 
   </dependencies>
-
 </project>
