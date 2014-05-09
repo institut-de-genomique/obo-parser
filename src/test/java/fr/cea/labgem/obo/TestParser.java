@@ -13,7 +13,6 @@ import fr.cea.ig.obo.Parser;
 import fr.cea.ig.obo.model.Cardinality;
 import fr.cea.ig.obo.model.Relation;
 import fr.cea.ig.obo.model.Term;
-import fr.cea.ig.obo.model.TermRelations;
 import fr.cea.ig.obo.model.ULS;
 import fr.cea.ig.obo.model.UPA;
 
