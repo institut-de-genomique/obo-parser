@@ -37,4 +37,4 @@ If you need to specialize these definitions you can extends these sub-entities (
 LICENSE
 =======
 
-CeCILL-C
+[CeCILL-C](LICENSE)
