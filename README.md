@@ -6,7 +6,7 @@ A java parser for obo file format as provided by unipathway
 Release
 =======
 
-- [obo-parser-0.1.0](https://github.com/institut-de-genomique/obo-parser/tree/obo-parser-0.1.0)
+- [obo-parser-0.1.0](https://github.com/institut-de-genomique/obo-parser/archive/obo-parser-0.1.0.zip)
 
 Download
 ========
