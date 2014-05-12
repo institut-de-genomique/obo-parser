@@ -8,11 +8,23 @@ Release
 
 - [v0.1.0](https://github.com/institut-de-genomique/obo-parser/tree/v0.1.0)
 
-Installation
-============
+Download
+========
+
+- Users: get current [stable release](https://github.com/institut-de-genomique/obo-parser/archive/v0.1.0.zip)
+- Developers: get it from git
+
 
 ```bash
 $ git clone https://github.com/institut-de-genomique/obo-parser.git
+````
+
+Installation
+============
+
+Go to obo-parser directory and launch maven to install and test it.
+
+```bash
 $ cd obo-parser
 $ mvn install
 $ mvn test
