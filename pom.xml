@@ -5,11 +5,26 @@
   <groupId>fr.cea.ig</groupId>
   <artifactId>obo-parser</artifactId>
   <version>0.1.0</version>
+  
   <name>obo-parser</name>
   <description>Parser for obo file format</description>
+  <url>https://github.com/institut-de-genomique/obo-parser</url>
+  
   <packaging>jar</packaging>
 
+  <licenses>
+    <license>
+      <name>CeCILL-C</name>
+      <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
+  <scm>
+    <url>https://github.com/institut-de-genomique/obo-parser</url>
+  </scm>
+
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
