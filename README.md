@@ -46,6 +46,11 @@ All Objects inherit from class [Term](src/main/java/fr/cea/ig/obo/model/Term.jav
 If you need to specialize these definitions you can extends these sub-entities (UPA, ULS, UER, UCR) .
 
 
+Build Information
+=================
+
+Travis Log: [here](https://travis-ci.org/institut-de-genomique/obo-parser)
+
 LICENSE
 =======
 
