@@ -27,10 +27,11 @@ UPA    term1  = (UPA) parser.getTerm("UPa:UPA00033");
 ULS    term2  = (ULS) parser.getTerm("UPa:ULS00003");
 ````
 
-Each Object inherit from class [Term](src/main/java/fr/cea/ig/obo/model/Term.java).
-[TermRelations](src/main/java/fr/cea/ig/obo/model/Term.java) describes entities which contains some sub-entities, like: UPA, ULS, UER, UCR.
+All Objects inherit from class [Term](src/main/java/fr/cea/ig/obo/model/Term.java).
 
-If you need to specialize these definition you can extends these sub-entities (UPA, ULS, UER, UCR) .
+[TermRelations](src/main/java/fr/cea/ig/obo/model/Term.java) describes entities which contains some sub-entities, like: [UPA](src/main/java/fr/cea/ig/obo/model/UPA.java), [UER](src/main/java/fr/cea/ig/obo/model/ULS.java), [UPA](src/main/java/fr/cea/ig/obo/model/UER.java), [UCR](src/main/java/fr/cea/ig/obo/model/UCR.java).
+
+If you need to specialize these definitions you can extends these sub-entities (UPA, ULS, UER, UCR) .
 
 
 **LICENSE**
