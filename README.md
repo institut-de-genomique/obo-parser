@@ -1,14 +1,14 @@
-**obo-parser**
+obo-parser
 ==========
 
 A java parser for obo file format as provided by unipathway
 
-**Release**
+Release
 =======
 
 - [v0.1.0](https://github.com/institut-de-genomique/obo-parser/tree/v0.1.0)
 
-**Installation**
+Installation
 ============
 
 ```bash
@@ -18,7 +18,7 @@ $ mvn install
 $ mvn test
 ```
 
-**Usage**
+Usage
 =====
 
 ````java
@@ -34,7 +34,7 @@ All Objects inherit from class [Term](src/main/java/fr/cea/ig/obo/model/Term.jav
 If you need to specialize these definitions you can extends these sub-entities (UPA, ULS, UER, UCR) .
 
 
-**LICENSE**
+LICENSE
 =======
 
 CeCILL-C
