@@ -54,4 +54,4 @@ Travis Log: [here](https://travis-ci.org/institut-de-genomique/obo-parser)
 LICENSE
 =======
 
-[CeCILL-C](LICENSE)
+Open source approved by the [Free Software Foundation](https://www.fsf.org/): [CeCILL-C](LICENSE)
