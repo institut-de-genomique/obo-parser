@@ -8,11 +8,11 @@ public class Cardinality {
     private final String    direction;
     
     /**
-     * @param number
-     * @param order
-     * @param direction
-     * @param is_primary
-     * @param is_alternate
+     * @param number number of relationships of a given type that may be defined for instances of this term
+     * @param order term position into the relation described
+     * @param direction Left to Right (LR), Right to Left (RL)
+     * @param is_primary describes compound is primary or not
+     * @param is_alternate term can to be switched by another
      */
     public Cardinality( final String number, final String order, final String direction, final Boolean is_primary, Boolean is_alternate ){
         this.number         = number;
@@ -23,15 +23,15 @@ public class Cardinality {
     }
     
     /**
-     * @param number
+     * @param number number of relationships of a given type that may be defined for instances of this term
      */
     public Cardinality( final String number ){
         this( number, "", "", false, false );
     }
     
     /**
-     * @param number
-     * @param order
+     * @param number number of relationships of a given type that may be defined for instances of this term
+     * @param order term position into the relation described
      */
     public Cardinality( final String number, final String order ){
         this( number, order, "", false, false );

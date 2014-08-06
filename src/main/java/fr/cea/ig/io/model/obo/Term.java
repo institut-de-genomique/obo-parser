@@ -7,9 +7,9 @@ public abstract class Term {
     protected final String definition;
 
     /**
-     * @param id
-     * @param name
-     * @param definition
+     * @param id Term id
+     * @param name Term name
+     * @param definition Term description
      */
     public Term(final String id, final String name, final String definition) {
         this.id = id;

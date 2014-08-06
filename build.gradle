@@ -8,6 +8,21 @@ targetCompatibility = 1.8
 version = '0.1.0'
 group = "fr.cea.ig.file.obo.model"
 
+task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+task packageSources(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives packageJavadoc
+    archives packageSources
+}
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
@@ -65,6 +80,7 @@ modifyPom {
                 id 'jmercier'
                 name 'Jonathan MERCIER'
                 email 'jmercier@genoscope.cns.fr'
+                timezone '+1'
             }
         }
     }
@@ -77,4 +93,14 @@ nexus {
     sign                    = true
     repositoryUrl           = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/release/'
     snapshotRepositoryUrl   = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/'
+}
+
+test {
+  testLogging {
+    exceptionFormat "full"
+  }
+}
+
+task createWrapper(type: Wrapper) {
+    gradleVersion = '1.7'
 }

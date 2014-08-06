@@ -22,9 +22,6 @@ public class Variant implements Iterable<Term> {
      * his reference
      * @param terms two dimensional list, the second dimension tell which term is possible to find
      * @param variantsList convert terms to Disjunctive normal form.
-     * @param line current position into terms list
-     * @param column current position into terms list
-     * @return
      */
     public static void getVariant( final List<List<Term>> terms, List<Variant> variantsList ){
         getVariant( terms, variantsList, 0, 0 );

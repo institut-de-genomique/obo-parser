@@ -15,10 +15,10 @@ public class TermRelations extends Term {
 
 
     /**
-     * @param id
-     * @param name
-     * @param definition
-     * @param relations
+     * @param id Id of this aggregated relations
+     * @param name name of this aggregated relations
+     * @param definition description  aggregated relations
+     * @param relations List of Relation
      */
     public TermRelations( final String id, final String name, final String definition, Relations relations ) {
         super(id, name, definition );
@@ -27,9 +27,9 @@ public class TermRelations extends Term {
     }
 
     /**
-     * @param id
-     * @param name
-     * @param definition
+     * @param id Id of this aggregated relations
+     * @param name  name of this aggregated relations
+     * @param definition description  aggregated relations
      */
     public TermRelations( final String id, final String name, final String definition ) {
         super(id, name, definition );
