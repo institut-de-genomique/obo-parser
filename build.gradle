@@ -56,15 +56,15 @@ buildscript {
 
 modifyPom {
     project {
-        name 'Grools'
-        description 'Grools is a project which aim to reasoning on biological fact to provide an enhanced genomic annotation'
-        url 'https://github.com/Grools/grools'
+        name 'obo-model'
+        description 'Obo Object'
+        url 'https://github.com/institut-de-genomique/obo-model'
         inceptionYear '2013'
 
         scm {
-            url 'https://github.com/Grools/grools'
-            connection 'scm:https://github.com/Grools/grools.git'
-            developerConnection 'scm:git://github.com/institut-de-genomique/obo-model.git'
+            url 'obo-model'
+            connection 'scm:https://github.com/institut-de-genomique/obo-model.git'
+            developerConnection 'scm:git@github.com:institut-de-genomique/obo-model.git'
         }
 
         licenses {
