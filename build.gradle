@@ -1,0 +1,80 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'nexus'
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+version = '0.1.0'
+group = "fr.cea.ig.file.obo.model"
+
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+jar {
+    manifest.attributes provider: 'genoscope'
+    baseName = 'obo-model'
+    version = '0.1.0'
+}
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://gsphere.genoscope.cns.fr/nexus/content/groups/public"
+    }
+}
+
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
+    }
+}
+
+modifyPom {
+    project {
+        name 'Grools'
+        description 'Grools is a project which aim to reasoning on biological fact to provide an enhanced genomic annotation'
+        url 'https://github.com/Grools/grools'
+        inceptionYear '2013'
+
+        scm {
+            url 'https://github.com/Grools/grools'
+            connection 'scm:https://github.com/Grools/grools.git'
+            developerConnection 'scm:git://github.com/institut-de-genomique/obo-model.git'
+        }
+
+        licenses {
+            license {
+                name 'CeCILL-C'
+                url 'http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'jmercier'
+                name 'Jonathan MERCIER'
+                email 'jmercier@genoscope.cns.fr'
+            }
+        }
+    }
+}
+
+nexus {
+    attachSources           = false
+    attachTests             = true
+    attachJavadoc           = false
+    sign                    = true
+    repositoryUrl           = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/release/'
+    snapshotRepositoryUrl   = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/'
+}
