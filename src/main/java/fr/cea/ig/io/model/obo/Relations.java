@@ -1,4 +1,4 @@
-package fr.cea.ig.obo.model;
+package fr.cea.ig.io.model.obo;
 
 import java.util.HashSet;
 import java.util.Iterator;

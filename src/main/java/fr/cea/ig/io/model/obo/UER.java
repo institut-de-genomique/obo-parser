@@ -1,4 +1,4 @@
-package fr.cea.ig.obo.model;
+package fr.cea.ig.io.model.obo;
 
 // UER: Enzymatic Reaction
 public class UER extends TermRelations {
