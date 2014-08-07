@@ -5,8 +5,8 @@ apply plugin: 'nexus'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = '0.1.0'
-group = "fr.cea.ig.file.obo.model"
+version = '0.1.0-SNAPSHOT'
+group = "fr.cea.ig.io.model.obo"
 
 task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
     from javadoc.destinationDir
@@ -31,7 +31,7 @@ task sourceJar(type: Jar) {
 jar {
     manifest.attributes provider: 'genoscope'
     baseName = 'obo-model'
-    version = '0.1.0'
+    version = '0.1.0-SNAPSHOT'
 }
 
 
