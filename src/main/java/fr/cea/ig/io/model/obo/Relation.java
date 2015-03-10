@@ -100,4 +100,14 @@ public class Relation {
         }
         return result;
     }
+
+    @Override
+    public int hashCode() {
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (idLeft != null ? idLeft.hashCode() : 0);
+        result = 31 * result + (idRight != null ? idRight.hashCode() : 0);
+        result = 31 * result + (cardinality != null ? cardinality.hashCode() : 0);
+        return result;
+    }
 }

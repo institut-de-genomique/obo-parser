@@ -1,7 +1,19 @@
 package fr.cea.ig.io.model.obo;
 
 
+import javax.validation.constraints.NotNull;
+
 // Chemical Reaction
+/*
+ *
+ */
+/*
+ * @startuml
+ *  class UCR extends TermRelations {
+  *     + UCR( @NotNull final String id, @NotNull final String name, @NotNull final String definition, Relations relations )
+ *  }
+ * @enduml
+ */
 public class UCR extends TermRelations {
     
     /**
@@ -10,7 +22,7 @@ public class UCR extends TermRelations {
      * @param definition description  aggregated relations
      * @param relations  List of Relation
      */
-    public UCR( final String id, final String name, final String definition, Relations relations ) {
+    public UCR( @NotNull final String id, @NotNull final String name, @NotNull final String definition, Relations relations ) {
         super(id, name, definition, relations);
     }
 
