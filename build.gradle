@@ -19,7 +19,7 @@ apply plugin: 'com.bmuschko.nexus'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '1.0'
+version = '0.2.0'
 group = 'fr.cea.ig.io.model.obo'
 description = projectDescription
 
