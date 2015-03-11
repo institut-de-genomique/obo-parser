@@ -1,0 +1,96 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'be.jlr-home.gradle:plantumlPlugin:0.1.+'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.+'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'plantuml'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'findbugs'
+apply plugin: 'com.bmuschko.nexus'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version = '0.2.0'
+group = 'fr.cea.ig.io'
+description = projectDescription
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repository.jboss.org/nexus/content/groups/public" }
+    maven { url "https://gsphere.genoscope.cns.fr/nexus/content/groups/public" }
+}
+
+dependencies {
+    testCompile group: 'junit',             name: 'junit',              version: '4.11'
+    compile     group: 'javax.validation',  name: 'validation-api',     version: '1.1.0.Final'
+    compile     group: 'ch.qos.logback',    name: 'logback-classic',    version: '1.1.2'
+    compile     group: 'fr.cea.ig.io',      name: 'obo-model',          version: '0.2.1'
+}
+
+jar {
+    manifest.attributes provider: 'genoscope'
+    manifest.attributes 'Created-By': 'LABGeM'
+    manifest.attributes 'Product-Name': projectName
+    baseName = projectName
+}
+
+tasks.withType(JavaForkOptions) {
+    jvmArgs  "-Dcom.sun.management.jmxremote.port=19988", "-Dcom.sun.management.jmxremote.ssl=false", "-Dcom.sun.management.jmxremote.authenticate=false", "-Ddrools.mbeans=enabled"
+}
+
+
+plantuml{
+    fileFormat = 'SVG'
+}
+findbugs {
+    effort = "max"
+}
+
+modifyPom {
+    project {
+        name          projectName
+        description   projectDescription
+        url           projectUrlBase+projectUrlCore
+        inceptionYear '2014'
+        scm {
+            url                   projectUrlBase+projectUrlCore
+            connection            projectUrlBase+projectUrlCore+'.git'
+            developerConnection   projectGitBase+projectUrlCore+'.git'
+        }
+        licenses {
+            license {
+                name          'CeCILL-C'
+                url           'http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt'
+                distribution  'repo'
+            }
+        }
+        developers {
+            developer {
+                id    'jmercier'
+                name  'Jonathan MERCIER'
+                email 'jmercier@genoscope.cns.fr'
+            }
+        }
+    }
+}
+
+extraArchive {
+    sources  = true
+    tests    = true
+    javadoc  = true
+}
+nexus {
+    sign                  = true
+    repositoryUrl         = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/release/'
+    snapshotRepositoryUrl = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/'
+}

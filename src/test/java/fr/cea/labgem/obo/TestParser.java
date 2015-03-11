@@ -1,32 +1,26 @@
 package fr.cea.labgem.obo;
 
-import java.net.URL;
-import java.util.List;
-import java.util.Set;
-
+import fr.cea.ig.io.model.obo.*;
+import fr.cea.ig.io.parser.OboParser;
 import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.cea.ig.obo.Parser;
-import fr.cea.ig.obo.model.Cardinality;
-import fr.cea.ig.obo.model.Relation;
-import fr.cea.ig.obo.model.Term;
-import fr.cea.ig.obo.model.ULS;
-import fr.cea.ig.obo.model.UPA;
+import java.net.URL;
+import java.util.List;
+import java.util.Set;
 
 public class TestParser extends TestCase {
     
     private static URL file = Thread.currentThread().getContextClassLoader()
                                                     .getResource("unipath.obo");
     
-    private Parser parser;
+    private OboParser oboParser;
     
     @Before
     public void setUp() {
         try {
-            parser = new Parser( file.getPath() );
+            oboParser = new OboParser( file.getPath() );
         } catch ( Exception e) {
             e.printStackTrace();
         }
@@ -34,13 +28,13 @@ public class TestParser extends TestCase {
     
     @Test
     public void testGetTerm() {
-        Term    term    = parser.getTerm("UPa:UPA00033");
+        Term    term    = oboParser.getTerm("UPa:UPA00033");
         assertEquals( "UPa:UPA00033", term.getId() );
     }
     
     @Test
     public void testULSVariant() {
-        UPA                term    = (UPA) parser.getTerm("UPa:UPA00033");
+        UPA                term    = (UPA) oboParser.getTerm("UPa:UPA00033");
         List<List<Term>>   childs  = term.getChilds();
 
         assertEquals( 2, childs.size() );
@@ -51,14 +45,14 @@ public class TestParser extends TestCase {
     
     @Test
     public void testRelation() {
-        UPA         term     = (UPA) parser.getTerm("UPa:UPA00033");
+        UPA         term     = (UPA) oboParser.getTerm("UPa:UPA00033");
         Relation    relation = new Relation( "is_a", "UPa:UPA00404", "L-lysine biosynthesis" );
         assertEquals( term.getIsA().toString(), relation.toString() );
     }
     
     @Test
     public void testCardinality() {
-        ULS             term        = (ULS) parser.getTerm("UPa:ULS00012");
+        ULS             term        = (ULS) oboParser.getTerm("UPa:ULS00012");
         Relation        relation1   = new Relation( "has_input_compound", "UPa:UPC00026", new Cardinality( "1" ), "UPa:UPC00026", "2-oxoglutarate" );
         Relation        relation2   = new Relation( "has_output_compound", "UPa:UPC00956", new Cardinality( "1" ), "UPa:UPC00956", "L-alpha-aminoadipate" );
         Relation        relation3   = new Relation( "part_of", "UPa:UPA00033", new Cardinality( "1")  );

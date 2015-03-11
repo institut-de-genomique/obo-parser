@@ -1,17 +1,15 @@
 package fr.cea.labgem.obo;
 
 
+import fr.cea.ig.io.model.obo.Term;
+import fr.cea.ig.io.model.obo.TermRelations;
+import fr.cea.ig.io.model.obo.Variant;
+import junit.framework.TestCase;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.junit.Test;
-
-import fr.cea.ig.obo.model.Term;
-import fr.cea.ig.obo.model.TermRelations;
-import fr.cea.ig.obo.model.Variant;
 
 public class TestVariant extends TestCase {
     

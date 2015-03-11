@@ -6,7 +6,7 @@ A java parser for obo file format as provided by unipathway
 Release
 =======
 
-- [obo-parser-0.1.0](https://github.com/institut-de-genomique/obo-parser/archive/obo-parser-0.1.0.zip)
+- [obo-parser-0.2.2](https://github.com/institut-de-genomique/obo-parser/archive/obo-parser-0.2.2.zip)
 
 Download
 ========
@@ -26,8 +26,7 @@ Go to obo-parser directory and launch maven to install and test it.
 
 ```bash
 $ cd obo-parser
-$ mvn install
-$ mvn test
+$ gradle install
 ```
 
 Usage

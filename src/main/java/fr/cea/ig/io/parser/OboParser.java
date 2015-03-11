@@ -1,35 +1,23 @@
-package fr.cea.ig.obo;
+package fr.cea.ig.io.parser;
 
+import fr.cea.ig.io.model.obo.*;
+
+import javax.validation.constraints.NotNull;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import fr.cea.ig.obo.model.Cardinality;
-import fr.cea.ig.obo.model.Relation;
-import fr.cea.ig.obo.model.Relations;
-import fr.cea.ig.obo.model.Term;
-import fr.cea.ig.obo.model.TermRelations;
-import fr.cea.ig.obo.model.UCR;
-import fr.cea.ig.obo.model.UER;
-import fr.cea.ig.obo.model.ULS;
-import fr.cea.ig.obo.model.UPA;
-import fr.cea.ig.obo.model.UPC;
-
-public class Parser {
+public class OboParser {
     private static int PAGE_SIZE            = 4_096;
     private static int DEFAULT_NUMBER_PAGE  = 10; 
     private Map<String,Term> terms;
 
 
-    private String extractQuotedString( final String line ){
+    private String extractQuotedString( @NotNull final String line ){
         String result = null;
         int quoteStart= line.indexOf("\"");
         int quoteEnd  = -1;
@@ -45,7 +33,7 @@ public class Parser {
     }
 
 
-    private Cardinality parseCardinality( final String line ){
+    private Cardinality parseCardinality( @NotNull final String line ){
         final String    cardinalityToken    = "cardinality";
         final String    orderToken          = "order";
         final String    isPrimaryToken      = "is_primary";
@@ -83,7 +71,7 @@ public class Parser {
         return new Cardinality( number, order, direction, isPrimary, isAlternate );
     }
     
-    private static Term termFactory(final String id, final String name, final String namespace, final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
+    private static Term termFactory(@NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
         Term term = null;
         if( namespace.equals("reaction") )
             term = new UCR( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
@@ -101,7 +89,7 @@ public class Parser {
     }
 
 
-    private void saveTerm(final String id, final String name, final String namespace, final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
+    private void saveTerm( @NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
         Term term = termFactory( id, name, namespace, definition, has_input_compound, has_output_compound,  part_of, isA, superPathway );
         boolean isTermWithRelation = true;
         if( term instanceof UPC )
@@ -139,11 +127,11 @@ public class Parser {
 
 
     /**
-     * @param type
-     * @param line
-     * @return
+     * @param type type of relationship as UPA, UPC, UER, ULS, UCR
+     * @param line line to read end extract information
+     * @return Relation
      */
-    private Relation parseRelationShip( final String type, final String line ){
+    private Relation parseRelationShip( @NotNull final String type, @NotNull final String line ){
         Cardinality     cardinality     = null;
         int             index           = 0;
         String          name            = "";
@@ -177,11 +165,11 @@ public class Parser {
 
     /**
      * 
-     * @param type
-     * @param line
+     * @param type type of relation as UPA, UPC, UER, ULS, UCR
+     * @param line line to read end extract information
      * @return
      */
-    private Relation parseRelation( final String type, final String line ){
+    private Relation parseRelation( @NotNull final String type, @NotNull final String line ){
         Cardinality     cardinality     = null;
         String[]        splittedLine    = line.split("!");
         String          idLeft          = splittedLine[0].trim();
@@ -193,12 +181,12 @@ public class Parser {
 
 
     /**
-     * @param path
-     * @param numberPage
-     * @throws ParseException
-     * @throws IOException
+     * @param path path location to the obo file to read
+     * @param numberPage custom number page to used, default 10 page size
+     * @throws ParseException if file badly formatted
+     * @throws IOException if an error occur while trying to read the file
      */
-    public Parser(final String path, final int numberPage ) throws ParseException, IOException {
+    public OboParser( @NotNull final String path, final int numberPage) throws ParseException, IOException {
         InputStreamReader   isr     = new InputStreamReader( new FileInputStream(path), Charset.forName("US-ASCII") );
         BufferedReader      br      = new BufferedReader( isr, PAGE_SIZE * numberPage );
         terms = new HashMap<String,Term>();
@@ -275,20 +263,20 @@ public class Parser {
 
 
     /**
-     * @param path
-     * @throws ParseException
-     * @throws IOException
+     * @param path path location to the obo file to read
+     * @throws ParseException if file badly formatted
+     * @throws IOException if an error occur while trying to read the file
      */
-    public Parser( final String path ) throws ParseException, IOException {
+    public OboParser( @NotNull final String path) throws ParseException, IOException {
         this( path, DEFAULT_NUMBER_PAGE );
     }
 
 
     /**
-     * @param id
-     * @return
+     * @param id    term id to select
+     * @return term the selected term
      */
-    public Term getTerm( final String id ){
+    public Term getTerm(  @NotNull final String id ){
         return terms.get( id );
     }
 }
