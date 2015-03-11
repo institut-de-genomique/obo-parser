@@ -89,7 +89,7 @@ modifyPom {
      javadoc  = true
  }
 nexus {
-    sign                  = true
-    repositoryUrl         = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/release/'
+    sign                  = false
+    repositoryUrl         = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/releases/'
     snapshotRepositoryUrl = 'https://gsphere.genoscope.cns.fr/nexus/content/repositories/snapshots/'
 }
