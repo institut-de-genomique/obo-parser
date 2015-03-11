@@ -15,7 +15,17 @@ Installation
 
 Go to obo-model directory and launch gradle to install it.
 
+If you have gradle on your system:
+
 ```bash
 $ cd obo-model
 $ gradle install
+```
+
+If you do not have gradle
+
+
+```bash
+$ cd obo-model
+$ ./gradlew install
 ```
