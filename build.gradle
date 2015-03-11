@@ -19,7 +19,7 @@ apply plugin: 'com.bmuschko.nexus'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '0.2.0'
+version = '0.2.1'
 group = 'fr.cea.ig.io.model.obo'
 description = projectDescription
 
@@ -59,12 +59,12 @@ modifyPom {
     project {
         name          projectName
         description   projectDescription
-        url           projectUrl
+        url           projectUrlBase+projectUrlCore
         inceptionYear '2014'
         scm {
-            url                   projectUrl
-            connection            projectUrl'.git'
-            developerConnection   'scm:git@github.com:institut-de-genomique/brools-core.git'
+            url                   projectUrlBase+projectUrlCore
+            connection            projectUrlBase+projectUrlCore+'.git'
+            developerConnection   projectGitBase+projectUrlCore+'.git'
         }
         licenses {
             license {
