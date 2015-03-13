@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 buildscript {
     repositories {
         mavenCentral()
@@ -20,7 +22,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 version = '0.2.0'
-group = 'fr.cea.ig.io'
+group = 'fr.cea.ig'
 description = projectDescription
 
 repositories {
@@ -34,13 +36,23 @@ dependencies {
     testCompile group: 'junit',             name: 'junit',              version: '4.11'
     compile     group: 'javax.validation',  name: 'validation-api',     version: '1.1.0.Final'
     compile     group: 'ch.qos.logback',    name: 'logback-classic',    version: '1.1.2'
-    compile     group: 'fr.cea.ig.io',      name: 'obo-model',          version: '0.2.2'
+    compile     group: 'fr.cea.ig',         name: 'obo-model',          version: '0.2.2'
 }
 
 jar {
-    manifest.attributes provider: 'genoscope'
-    manifest.attributes 'Created-By': 'LABGeM'
-    manifest.attributes 'Product-Name': projectName
+    manifest {
+        attributes( "Implementation-Title":         projectName,
+                    "Implementation-Version":       version,
+                    "Implementation-Vendor":        "Genoscope, LABGeM",
+                    "Product-Name":                 projectName,
+                    "provider":                     "Genoscope",
+                    "Created-By":                   "LABGeM",
+                    "description":                  "BROOLS Application.",
+                    "Build-Date":                   new SimpleDateFormat("yyyy-MM-dd").format(new Date()),
+                    "Build-JDK":                    System.getProperty("java.version"),
+                    "Build-Gradle":                 project.gradle.gradleVersion
+                   )
+    }
     baseName = projectName
 }
 
