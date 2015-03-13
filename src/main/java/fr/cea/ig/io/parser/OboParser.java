@@ -279,4 +279,11 @@ public class OboParser {
     public Term getTerm(  @NotNull final String id ){
         return terms.get( id );
     }
+
+   /**
+    * @return terms iterator 
+    */ 
+   public Iterator iterator(){
+       return terms.entrySet().iterator();
+   }
 }
