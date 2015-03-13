@@ -1,5 +1,30 @@
-package fr.cea.ig.obo.model;
+package fr.cea.ig.io.model.obo;
 
+/*
+ *
+ */
+/*
+ * @startuml
+ * class Cardinality{
+ *  - number                        : String
+ *  - order                         : String
+ *  - is_primary                    : Boolean
+ *  - is_alternate                  : Boolean
+ *  - direction                     : String
+ *  + Cardinality( final String number, final String order, final String direction, final Boolean is_primary, Boolean is_alternate )
+ *  + Cardinality( @NotNull final String number )
+ *  + Cardinality( final String number, final String order )
+ *  + getDirection()                : String
+ *  + getNumber()                   : String
+ *  + getOrder()                    : String
+ *  + getIs_primary()               : Boolean
+ *  + getIs_alternate()             : Boolean
+ *  + toString()                    : String
+ *  + equals( final Object obj )    : boolean
+ *  + hashCode()                    : int
+ * }
+ * @enduml
+ */
 public class Cardinality {
     private final String    number;
     private final String    order;
@@ -8,11 +33,11 @@ public class Cardinality {
     private final String    direction;
     
     /**
-     * @param number
-     * @param order
-     * @param direction
-     * @param is_primary
-     * @param is_alternate
+     * @param number number of relationships of a given type that may be defined for instances of this term
+     * @param order term position into the relation described
+     * @param direction Left to Right (LR), Right to Left (RL)
+     * @param is_primary describes compound is primary or not
+     * @param is_alternate term can to be switched by another
      */
     public Cardinality( final String number, final String order, final String direction, final Boolean is_primary, Boolean is_alternate ){
         this.number         = number;
@@ -23,15 +48,15 @@ public class Cardinality {
     }
     
     /**
-     * @param number
+     * @param number number of relationships of a given type that may be defined for instances of this term
      */
     public Cardinality( final String number ){
         this( number, "", "", false, false );
     }
     
     /**
-     * @param number
-     * @param order
+     * @param number number of relationships of a given type that may be defined for instances of this term
+     * @param order term position into the relation described
      */
     public Cardinality( final String number, final String order ){
         this( number, order, "", false, false );
@@ -71,12 +96,12 @@ public class Cardinality {
     }
     
     @Override
-    public boolean equals(Object obj){
+    public boolean equals( final Object obj){
         boolean result = false;
-        if (obj == this)
-            result = true;
-        else if( obj == null || obj.getClass() != this.getClass() )
+        if( obj == null || obj.getClass() != this.getClass() )
             result = false;
+        else if (obj == this)
+            result = true;
         else {
             Cardinality cardinality = (Cardinality) obj;
             if( cardinality.getDirection().equals(direction)        &&
@@ -86,6 +111,16 @@ public class Cardinality {
                 cardinality.getIs_alternate().equals(is_alternate)  )
                 result = true;
         }
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = number != null ? number.hashCode() : 0;
+        result = 31 * result + (order != null ? order.hashCode() : 0);
+        result = 31 * result + (is_primary != null ? is_primary.hashCode() : 0);
+        result = 31 * result + (is_alternate != null ? is_alternate.hashCode() : 0);
+        result = 31 * result + (direction != null ? direction.hashCode() : 0);
         return result;
     }
 }

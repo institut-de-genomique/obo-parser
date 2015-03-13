@@ -1,5 +1,24 @@
-package fr.cea.ig.obo.model;
+package fr.cea.ig.io.model.obo;
 
+import javax.validation.constraints.NotNull;
+
+/*
+ *
+ */
+/*
+ * @startuml
+ * abstract class Term {
+ *  - id                : String
+ *  - name              : String
+ *  - definition        : String
+ *  + Term(@NotNull final String id, @NotNull final String name, @NotNull final String definition)
+ *  + getId()           : String
+ *  + getName()         : String
+ *  + getDefinition()   : String
+ *  + toString()        : String
+ * }
+ * @enduml
+ */
 public abstract class Term {
 
     protected final String id;
@@ -7,13 +26,13 @@ public abstract class Term {
     protected final String definition;
 
     /**
-     * @param id
-     * @param name
-     * @param definition
+     * @param id Term id
+     * @param name Term name
+     * @param definition Term description
      */
-    public Term(final String id, final String name, final String definition) {
-        this.id = id;
-        this.name = name;
+    public Term(@NotNull final String id, @NotNull final String name, @NotNull final String definition) {
+        this.id         = id;
+        this.name       = name;
         this.definition = definition;
     }
 

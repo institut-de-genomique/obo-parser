@@ -1,11 +1,39 @@
-package fr.cea.ig.obo.model;
+package fr.cea.ig.io.model.obo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
+import javax.validation.constraints.NotNull;
+import java.util.*;
+/*
+ *
+ */
+/*
+ * @startuml
+ *  class TermRelations extends Term {
+ *      * relations     : Relations
+ *      * childs        : List<List<Term>>
+ *      + TermRelations( @NotNull final String id, @NotNull final String name, @NotNull final String definition, Relations relations )
+ *      + TermRelations( @NotNull final String id, @NotNull final String name, @NotNull final String definition )
+ *      + getRelations()                                : Relations
+ *      + getRelation( final String type )              : Set<Relation>
+ *      + isPartOf( @NotNull final String id )          : boolean
+ *      + hasInputCompound(@NotNull final String id )   : boolean
+ *      + hasInputCompound(@NotNull final Term term )   : boolean
+ *      + hasOutputCompound(@NotNull final String id )  : boolean
+ *      + hasOutputCompound(@NotNull final Term term )  : boolean
+ *      + hasAtLeastOneCommonOutputCompound( @NotNull final TermRelations term ) : boolean
+ *      + hasAtLeastOneCommonInputCompound( @NotNull final TermRelations term ) : boolean
+ *      + isVariantOf( @NotNull final TermRelations term )  : boolean
+ *      + isAfter( @NotNull final TermRelations term )  : boolean
+ *      + isBefore( @NotNull final TermRelations term ) : boolean
+ *      + isLinked( @NotNull final TermRelations term ) : boolean
+ *      + add( @NotNull final Term term )               : void
+ *      + addAll( @NotNull final List<List<Term>> terms )  : void
+ *      + get( final int index )                        : List<Term>
+ *      + iterator()                                    : Iterator<List<Term>>
+ *      + getChilds()                                   : List<List<Term>>
+ *      + toString()                                    : String
+ *  }
+ * @enduml
+ */
 public class TermRelations extends Term {
 
     protected final Relations relations;
@@ -15,23 +43,23 @@ public class TermRelations extends Term {
 
 
     /**
-     * @param id
-     * @param name
-     * @param definition
-     * @param relations
+     * @param id Id of this aggregated relations
+     * @param name name of this aggregated relations
+     * @param definition description  aggregated relations
+     * @param relations List of Relation
      */
-    public TermRelations( final String id, final String name, final String definition, Relations relations ) {
+    public TermRelations( @NotNull final String id, @NotNull final String name, @NotNull final String definition, Relations relations ) {
         super(id, name, definition );
         this.relations  = relations;
         this.childs     = new ArrayList<List<Term>>();
     }
 
     /**
-     * @param id
-     * @param name
-     * @param definition
+     * @param id Id of this aggregated relations
+     * @param name  name of this aggregated relations
+     * @param definition description  aggregated relations
      */
-    public TermRelations( final String id, final String name, final String definition ) {
+    public TermRelations( @NotNull final String id, @NotNull final String name, @NotNull final String definition ) {
         super(id, name, definition );
         this.relations  = new Relations();
         this.childs     = new ArrayList<List<Term>>();
@@ -65,37 +93,37 @@ public class TermRelations extends Term {
         return super.toString() + "\n" + relations.toString();
     }
 
-    public boolean isPartOf( final String id ) {
+    public boolean isPartOf( @NotNull final String id ) {
         return relations.isPartOf( id );
     }
 
 
-    public boolean isPartOf( final Term term ) {
+    public boolean isPartOf( @NotNull final Term term ) {
         return relations.isPartOf( term.getId() );
     }
 
 
-    public boolean hasInputCompound(final String id ) {
+    public boolean hasInputCompound(@NotNull final String id ) {
         return relations.hasInputCompound( id );
     }
 
 
-    public boolean hasInputCompound(final Term term ) {
+    public boolean hasInputCompound(@NotNull final Term term ) {
         return relations.hasInputCompound( term.getId() );
     }
 
 
-    public boolean hasOutputCompound(final String id ) {
+    public boolean hasOutputCompound(@NotNull final String id ) {
         return relations.hasOutputCompound( id );
     }
 
 
-    public boolean hasOutputCompound(final Term term ) {
+    public boolean hasOutputCompound(@NotNull final Term term ) {
         return relations.hasOutputCompound( term.getId() );
     }
 
 
-    public boolean hasAtLeastOneCommonOutputCompound( final TermRelations term ){
+    public boolean hasAtLeastOneCommonOutputCompound( @NotNull final TermRelations term ){
         boolean             result      = false;
         boolean             isSearching = true;
         Set<Relation>       relation    = relations.getOutputCompound();
@@ -117,7 +145,7 @@ public class TermRelations extends Term {
     }
 
 
-    public boolean hasAtLeastOneCommonInputCompound( final TermRelations term ){
+    public boolean hasAtLeastOneCommonInputCompound( @NotNull final TermRelations term ){
         boolean             result      = false;
         boolean             isSearching = true;
         Set<Relation>       relation    = relations.getInputCompound();
@@ -139,12 +167,12 @@ public class TermRelations extends Term {
     }
 
 
-    public boolean isVariantOf( final TermRelations term ) {
+    public boolean isVariantOf( @NotNull final TermRelations term ) {
         return hasAtLeastOneCommonOutputCompound( term ) && hasAtLeastOneCommonInputCompound( term );
     }
 
 
-    public boolean isAfter( final TermRelations term ){
+    public boolean isAfter( @NotNull final TermRelations term ){
         boolean             result      = false;
         boolean             isSearching = true;
         Iterator<Relation>  iter        = relations.getOutputCompound().iterator();
@@ -164,7 +192,7 @@ public class TermRelations extends Term {
     }
 
 
-    public boolean isBefore( final TermRelations term ){
+    public boolean isBefore( @NotNull final TermRelations term ){
         boolean             result      = false;
         boolean             isSearching = true;
         Iterator<Relation>  iter        = relations.getInputCompound().iterator();
@@ -184,12 +212,12 @@ public class TermRelations extends Term {
     }
 
 
-    public boolean isLinked( final TermRelations term ){
+    public boolean isLinked( @NotNull final TermRelations term ){
         return (isAfter(term) || isBefore(term) );
     }
 
 
-    public void add( final Term term ){
+    public void add( @NotNull final Term term ){
         boolean                 isSearching = true;
         Iterator<List<Term>>    iter        = childs.iterator();
         List<Term>              currentList = null;
@@ -218,7 +246,7 @@ public class TermRelations extends Term {
     }
 
 
-    public void addAll( final List<List<Term>> terms ){
+    public void addAll( @NotNull final List<List<Term>> terms ){
         childs.addAll(terms);
     }
 

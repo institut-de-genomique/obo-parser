@@ -1,4 +1,4 @@
-package fr.cea.ig.obo.model;
+package fr.cea.ig.io.model.obo;
 
 public class Relation {
 
@@ -9,11 +9,11 @@ public class Relation {
     private final Cardinality   cardinality;
     
     /**
-     * @param type
-     * @param idLeft
-     * @param cardinality
-     * @param idRight
-     * @param name
+     * @param type Relation type as UPA, UPC, EUR, ULS, UCR
+     * @param idLeft Id of left term in given relation
+     * @param cardinality Cardinality between term left and right
+     * @param idRight Id of right term in given relation
+     * @param name Relation name
      */
     public Relation( final String type, final String idLeft, final Cardinality cardinality, final String idRight, final String name ){
         this.type           = type;
@@ -24,26 +24,26 @@ public class Relation {
     }
     
     /**
-     * @param type
-     * @param id
+     * @param type Relation type as UPA, UPC, EUR, ULS, UCR
+     * @param id Id of left term in given relation
      */
     public Relation( final String type, final String id ){
         this( type, id, null, "", "" );
     }
     
     /**
-     * @param type
-     * @param id
-     * @param cardinality
+     * @param type Relation type as UPA, UPC, EUR, ULS, UCR
+     * @param id Id of left term in given relation
+     * @param cardinality Cardinality between term left and right
      */
     public Relation( final String type, final String id, final Cardinality cardinality ){
         this( type, id, cardinality, "", "" );
     }
     
     /**
-     * @param type
-     * @param id
-     * @param name
+     * @param type Relation type as UPA, UPC, EUR, ULS, UCR
+     * @param id Id of left term in given relation
+     * @param name Relation name
      */
     public Relation( final String type, final String id, String name ){
         this( type, id, null, "", name );
@@ -98,6 +98,16 @@ public class Relation {
                 relation.getType().equals(type)                 )
                 result = true;
         }
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (idLeft != null ? idLeft.hashCode() : 0);
+        result = 31 * result + (idRight != null ? idRight.hashCode() : 0);
+        result = 31 * result + (cardinality != null ? cardinality.hashCode() : 0);
         return result;
     }
 }

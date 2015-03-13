@@ -1,4 +1,4 @@
-package fr.cea.ig.obo.model;
+package fr.cea.ig.io.model.obo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,11 +8,16 @@ import java.util.Set;
 
 public class Variant implements Iterable<Term> {
 
-    private static long idCounter = 1L;
-    
-    private long                id;
-    private List<Term> childs;
+    private static          long    idCounter = 1L;
+    private static final    Object  countLock = new Object();
+
+    private final long          id;
+    private List<Term>          childs;
     private Set<String>         termVariant;
+
+    private void incrementCount() {
+    }
+
 
     /**
      * getVariant is a function which convert a two dimensional list of terms
@@ -22,9 +27,6 @@ public class Variant implements Iterable<Term> {
      * his reference
      * @param terms two dimensional list, the second dimension tell which term is possible to find
      * @param variantsList convert terms to Disjunctive normal form.
-     * @param line current position into terms list
-     * @param column current position into terms list
-     * @return
      */
     public static void getVariant( final List<List<Term>> terms, List<Variant> variantsList ){
         getVariant( terms, variantsList, 0, 0 );
@@ -53,24 +55,38 @@ public class Variant implements Iterable<Term> {
 
 
     public Variant( ){
-        id          = idCounter++;
+        synchronized (countLock) {
+            idCounter++;
+            id      = idCounter;
+        }
         childs      = new ArrayList<Term>();
+        incrementCount();
     }
 
 
     public Variant( final Term term ){
-        id          = idCounter++;
+        synchronized (countLock) {
+            idCounter++;
+            id      = idCounter;
+        }
         childs      = new ArrayList<Term>( Arrays.asList( term ) );
+        incrementCount();
     }
 
     public Variant( final List<Term> termList ){
-        id          = idCounter++;
+        synchronized (countLock) {
+            idCounter++;
+            id      = idCounter;
+        }
         childs      = termList;
     }
 
 
     public Variant( final List<Term> termList, Set<String> variantId  ){
-        id          = idCounter++;
+        synchronized (countLock) {
+            idCounter++;
+            id      = idCounter;
+        }
         childs      = termList;
         termVariant = variantId;
     }
