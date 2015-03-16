@@ -10,10 +10,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class OboParser {
-    private static int PAGE_SIZE            = 4_096;
-    private static int DEFAULT_NUMBER_PAGE  = 10; 
+public class OboParser implements Iterable {
+    private static final int PAGE_SIZE       = 4_096;
+    private static final int DEFAULT_NUMBER_PAGE  = 10;
     private Map<String,Term> terms;
 
 
@@ -60,12 +61,12 @@ public class OboParser {
         if( isPrimaryPos >=0 ){
             tmp = extractQuotedString( line.substring(isPrimaryPos) );
             if( tmp != null )
-                isPrimary = ( "False".equals(tmp) ) ? false : true;
+                isPrimary = (!"False".equals(tmp));
         }
         if( isAlternatePos >=0 ){
             tmp = extractQuotedString( line.substring(isAlternatePos) );
             if( tmp != null )
-                isAlternate = ( "False".equals(tmp) ) ? false : true;
+                isAlternate = (!"False".equals(tmp));
         }
         
         return new Cardinality( number, order, direction, isPrimary, isAlternate );
@@ -189,16 +190,16 @@ public class OboParser {
     public OboParser( @NotNull final String path, final int numberPage) throws ParseException, IOException {
         InputStreamReader   isr     = new InputStreamReader( new FileInputStream(path), Charset.forName("US-ASCII") );
         BufferedReader      br      = new BufferedReader( isr, PAGE_SIZE * numberPage );
-        terms = new HashMap<String,Term>();
+        terms = new HashMap<>();
         String line = br.readLine();
         
         String          id                  = null;
         String          name                = null;
         String          namespace           = null;
         String          definition          = null;
-        Set<Relation>   has_input_compound  = new HashSet<Relation>();
-        Set<Relation>   has_output_compound = new HashSet<Relation>();
-        Set<Relation>   part_of             = new HashSet<Relation>();
+        Set<Relation>   has_input_compound  = new HashSet<>();
+        Set<Relation>   has_output_compound = new HashSet<>();
+        Set<Relation>   part_of             = new HashSet<>();
         Relation        isA                 = null;
         Relation        superPathway        = null;
         final String    tokenInput          = "has_input_compound";
@@ -227,9 +228,9 @@ public class OboParser {
                     name                = null;
                     namespace           = null;
                     definition          = null;
-                    has_input_compound  = new HashSet<Relation>();
-                    has_output_compound = new HashSet<Relation>();
-                    part_of             = new HashSet<Relation>();
+                    has_input_compound  = new HashSet<>();
+                    has_output_compound = new HashSet<>();
+                    part_of             = new HashSet<>();
                     isA                 = null;
                     superPathway        = null;
                 }
@@ -286,4 +287,39 @@ public class OboParser {
    public Iterator iterator(){
        return terms.entrySet().iterator();
    }
+
+    public List<UPA> getPathways(){
+        List<UPA> upaList = terms.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith("UPa:UPA"))
+                .map(entry -> (UPA) entry.getValue())
+                .collect(Collectors.toList());
+        return upaList;
+    }
+
+    
+    public List<ULS> getBlocksReactions(){
+        List<ULS> ulsList = terms.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+                .map(entry -> (ULS) entry.getValue())
+                .collect(Collectors.toList());
+        return ulsList;
+    }
+
+
+    public List<UER> getReactions(){
+        List<UER> uerList = terms.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+                .map(entry -> (UER) entry.getValue())
+                .collect(Collectors.toList());
+        return uerList;
+    }
+
+
+    public List<UPC> getCompunds(){
+        List<UPC> upcList = terms.entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+                .map(entry -> (UPC) entry.getValue())
+                .collect(Collectors.toList());
+        return upcList;
+    }
 }
