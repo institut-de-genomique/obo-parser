@@ -17,6 +17,14 @@ public class OboParser implements Iterable {
     private static final int DEFAULT_NUMBER_PAGE  = 10;
     private Map<String,Term> terms;
 
+    private static void sort( final List<? extends Term> list){
+        Collections.sort(list, new Comparator<Term>(){
+          public int compare(Term o1, Term o2)
+          {
+             return o1.getId().compareTo(o2.getId());
+          }
+        });
+    }
 
     private String extractQuotedString( @NotNull final String line ){
         String result = null;
@@ -293,6 +301,7 @@ public class OboParser implements Iterable {
                 .filter(entry -> entry.getKey().startsWith("UPa:UPA"))
                 .map(entry -> (UPA) entry.getValue())
                 .collect(Collectors.toList());
+        sort(upaList);
         return upaList;
     }
 
@@ -302,6 +311,7 @@ public class OboParser implements Iterable {
                 .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
                 .map(entry -> (ULS) entry.getValue())
                 .collect(Collectors.toList());
+        sort(ulsList);
         return ulsList;
     }
 
@@ -311,6 +321,7 @@ public class OboParser implements Iterable {
                 .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
                 .map(entry -> (UER) entry.getValue())
                 .collect(Collectors.toList());
+        sort(uerList);
         return uerList;
     }
 
@@ -320,6 +331,7 @@ public class OboParser implements Iterable {
                 .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
                 .map(entry -> (UPC) entry.getValue())
                 .collect(Collectors.toList());
+        sort(upcList);
         return upcList;
     }
 }
