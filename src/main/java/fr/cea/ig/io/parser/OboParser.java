@@ -80,7 +80,7 @@ public class OboParser implements Iterable {
         return new Cardinality( number, order, direction, isPrimary, isAlternate );
     }
     
-    private static Term termFactory(@NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
+    private static Term termFactory(@NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Relation superPathway ) throws ParseException{
         Term term = null;
         if( namespace.equals("reaction") )
             term = new UCR( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
@@ -98,7 +98,7 @@ public class OboParser implements Iterable {
     }
 
 
-    private void saveTerm( @NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Relation isA, final Relation superPathway ) throws ParseException{
+    private void saveTerm( @NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Relation superPathway ) throws ParseException{
         Term term = termFactory( id, name, namespace, definition, has_input_compound, has_output_compound,  part_of, isA, superPathway );
         boolean isTermWithRelation = true;
         if( term instanceof UPC )
@@ -208,7 +208,7 @@ public class OboParser implements Iterable {
         Set<Relation>   has_input_compound  = new HashSet<>();
         Set<Relation>   has_output_compound = new HashSet<>();
         Set<Relation>   part_of             = new HashSet<>();
-        Relation        isA                 = null;
+        Set<Relation>   isA                 = new HashSet<>();
         Relation        superPathway        = null;
         final String    tokenInput          = "has_input_compound";
         final String    tokenOutput         = "has_output_compound";
@@ -239,7 +239,7 @@ public class OboParser implements Iterable {
                     has_input_compound  = new HashSet<>();
                     has_output_compound = new HashSet<>();
                     part_of             = new HashSet<>();
-                    isA                 = null;
+                    isA                 = new HashSet<>();
                     superPathway        = null;
                 }
             }
@@ -260,7 +260,7 @@ public class OboParser implements Iterable {
                     part_of.add( parseRelationShip( tokenPartOf, line.substring( line.indexOf(tokenPartOf) + tokenPartOf.length() ).trim() ) );
             }
             else if( line.startsWith( "is_a:" ) )
-               isA = parseRelation( tokenIsA, line.substring( line.indexOf(tokenIsA) + tokenIsA.length() + 1 ).trim() );
+               isA.add( parseRelation( tokenIsA, line.substring( line.indexOf(tokenIsA) + tokenIsA.length() + 1 ).trim() ) );
             else if( line.startsWith( "uniprot_super_pathway:" ) )
                 superPathway = parseRelation( tokenSuperPathway, line.substring( line.indexOf(tokenSuperPathway) + tokenSuperPathway.length() + 1 ).trim() );
             line = br.readLine();

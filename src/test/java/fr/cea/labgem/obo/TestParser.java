@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +48,9 @@ public class TestParser extends TestCase {
     public void testRelation() {
         UPA         term     = (UPA) oboParser.getTerm("UPa:UPA00033");
         Relation    relation = new Relation( "is_a", "UPa:UPA00404", "L-lysine biosynthesis" );
-        assertEquals( term.getIsA().toString(), relation.toString() );
+        Iterator<Relation> iter = term.getIsA().iterator();
+        assertTrue(iter.hasNext());
+        assertEquals( iter.next().toString(), relation.toString() );
     }
     
     @Test
