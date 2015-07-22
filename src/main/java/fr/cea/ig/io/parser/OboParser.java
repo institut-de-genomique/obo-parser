@@ -3,10 +3,7 @@ package fr.cea.ig.io.parser;
 import fr.cea.ig.io.model.obo.*;
 
 import javax.validation.constraints.NotNull;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.*;
@@ -190,13 +187,13 @@ public class OboParser implements Iterable {
 
 
     /**
-     * @param path path location to the obo file to read
+     * @param input stream from obo file to read
      * @param numberPage custom number page to used, default 10 page size
      * @throws ParseException if file badly formatted
      * @throws IOException if an error occur while trying to read the file
      */
-    public OboParser( @NotNull final String path, final int numberPage) throws ParseException, IOException {
-        InputStreamReader   isr     = new InputStreamReader( new FileInputStream(path), Charset.forName("US-ASCII") );
+    public OboParser( @NotNull final InputStream input, final int numberPage) throws ParseException, IOException {
+        InputStreamReader   isr     = new InputStreamReader( input, Charset.forName("US-ASCII") );
         BufferedReader      br      = new BufferedReader( isr, PAGE_SIZE * numberPage );
         terms = new HashMap<>();
         String line = br.readLine();
@@ -277,7 +274,17 @@ public class OboParser implements Iterable {
      * @throws IOException if an error occur while trying to read the file
      */
     public OboParser( @NotNull final String path) throws ParseException, IOException {
-        this( path, DEFAULT_NUMBER_PAGE );
+        this( new FileInputStream(path), DEFAULT_NUMBER_PAGE );
+    }
+
+
+    /**
+     * @param input stream from the obo file to read
+     * @throws ParseException if file badly formatted
+     * @throws IOException if an error occur while trying to read the file
+     */
+    public OboParser( @NotNull final InputStream input) throws ParseException, IOException {
+        this( input, DEFAULT_NUMBER_PAGE );
     }
 
 
