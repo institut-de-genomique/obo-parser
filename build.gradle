@@ -21,7 +21,7 @@ apply plugin: 'com.bmuschko.nexus'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = '0.2.1'
+version = '0.2.2'
 group = 'fr.cea.ig'
 description = projectDescription
 
@@ -36,7 +36,7 @@ dependencies {
     testCompile group: 'junit',             name: 'junit',              version: '4.11'
     compile     group: 'javax.validation',  name: 'validation-api',     version: '1.1.0.Final'
     compile     group: 'ch.qos.logback',    name: 'logback-classic',    version: '1.1.2'
-    compile     group: 'fr.cea.ig',         name: 'obo-model',          version: '0.2.3'
+    compile     group: 'fr.cea.ig',         name: 'obo-model',          version: '0.2.+'
 }
 
 jar {
