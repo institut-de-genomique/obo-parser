@@ -333,7 +333,7 @@ public class OboParser implements Iterable {
     }
 
 
-    public List<UPC> getCompunds(){
+    public List<UPC> getCompounds(){
         List<UPC> upcList = terms.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
                 .map(entry -> (UPC) entry.getValue())
