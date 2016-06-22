@@ -255,11 +255,12 @@ public class OboParser implements Iterable {
                     has_output_compound.add( parseRelationShip( tokenOutput, line.substring( line.indexOf(tokenOutput) + tokenOutput.length() ).trim() ) );
                 else if( line.contains( tokenPartOf ) )
                     part_of.add( parseRelationShip( tokenPartOf, line.substring( line.indexOf(tokenPartOf) + tokenPartOf.length() ).trim() ) );
+                else if( line.contains( tokenSuperPathway ) )
+                    superPathway = parseRelation( tokenSuperPathway, line.substring( line.indexOf(tokenSuperPathway) + tokenSuperPathway.length() + 1 ).trim() );
             }
             else if( line.startsWith( "is_a:" ) )
                isA.add( parseRelation( tokenIsA, line.substring( line.indexOf(tokenIsA) + tokenIsA.length() + 1 ).trim() ) );
-            else if( line.startsWith( "uniprot_super_pathway:" ) )
-                superPathway = parseRelation( tokenSuperPathway, line.substring( line.indexOf(tokenSuperPathway) + tokenSuperPathway.length() + 1 ).trim() );
+
             line = br.readLine();
         }
         saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, superPathway );
