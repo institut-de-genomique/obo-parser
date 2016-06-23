@@ -8,10 +8,11 @@ import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class OboParser implements Iterable {
-    private static final int PAGE_SIZE       = 4_096;
-    private static final int DEFAULT_NUMBER_PAGE  = 10;
+    private static final int PAGE_SIZE              = 4_096;
+    private static final int DEFAULT_NUMBER_PAGE    = 10;
     private Map<String,Term> terms;
 
     private static void sort( final List<? extends Term> list){
@@ -25,11 +26,11 @@ public class OboParser implements Iterable {
 
     private static String extractQuotedString( @NotNull final String line ){
         String result = null;
-        int quoteStart= line.indexOf("\"");
+        int quoteStart= line.indexOf('"');
         int quoteEnd  = -1;
         
         if( quoteStart >= 0){
-            quoteEnd = line.substring( quoteStart + 1 ).indexOf("\"");
+            quoteEnd = line.substring( quoteStart + 1 ).indexOf('"');
             if( quoteEnd >= 0 )
                 quoteStart++;
                 result = line.substring(quoteStart, quoteStart + quoteEnd );
@@ -328,46 +329,74 @@ public class OboParser implements Iterable {
    /**
     * @return terms iterator 
     */ 
-   public Iterator iterator(){
+    public Iterator<Map.Entry<String,Term>> iterator(){
        return terms.entrySet().iterator();
    }
 
-    public List<UPA> getPathways(){
-        List<UPA> upaList = terms.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("UPa:UPA"))
-                .map(entry -> (UPA) entry.getValue())
-                .collect(Collectors.toList());
-        sort(upaList);
+    /**
+    * @return stream of name,term
+    */
+    public Stream<Map.Entry<String, Term>> stream(){
+        return terms.entrySet().stream();
+    }
+
+
+    public List<UPA> getPathways( boolean needSorted ){
+        List<UPA> upaList = stream().filter(entry -> entry.getKey().startsWith("UPa:UPA"))
+                                    .map(entry -> (UPA) entry.getValue())
+                                    .collect(Collectors.toList());
+        if(needSorted)
+            sort(upaList);
         return upaList;
     }
 
+
+    public List<UPA> getPathways( ){
+        return getPathways(false);
+    }
+
     
-    public List<ULS> getBlocksReactions(){
-        List<ULS> ulsList = terms.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
-                .map(entry -> (ULS) entry.getValue())
-                .collect(Collectors.toList());
-        sort(ulsList);
+    public List<ULS> getBlocksReactions( boolean needSorted ){
+        List<ULS> ulsList = stream().filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+                                    .map(entry -> (ULS) entry.getValue())
+                                    .collect(Collectors.toList());
+        if(needSorted)
+            sort(ulsList);
         return ulsList;
     }
 
 
-    public List<UER> getReactions(){
-        List<UER> uerList = terms.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
-                .map(entry -> (UER) entry.getValue())
-                .collect(Collectors.toList());
-        sort(uerList);
+    public List<ULS> getBlocksReactions( ){
+        return getBlocksReactions(false);
+    }
+
+
+    public List<UER> getReactions( boolean needSorted ){
+        List<UER> uerList = stream().filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+                                    .map(entry -> (UER) entry.getValue())
+                                    .collect(Collectors.toList());
+        if(needSorted)
+            sort(uerList);
         return uerList;
     }
 
 
-    public List<UPC> getCompounds(){
-        List<UPC> upcList = terms.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("UPa:ULS"))
-                .map(entry -> (UPC) entry.getValue())
-                .collect(Collectors.toList());
-        sort(upcList);
+    public  List<UER> getReactions( ){
+        return getReactions(false);
+    }
+
+
+    public List<UPC> getCompounds( boolean needSorted ){
+        List<UPC> upcList = stream().filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+                                    .map(entry -> (UPC) entry.getValue())
+                                    .collect(Collectors.toList());
+        if(needSorted)
+            sort(upcList);
         return upcList;
     }
+
+    
+     public List<UPC> getCompounds( ){
+         return getCompounds(false);
+     }
 }
