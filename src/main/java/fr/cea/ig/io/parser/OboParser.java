@@ -23,7 +23,7 @@ public class OboParser implements Iterable {
         });
     }
 
-    private String extractQuotedString( @NotNull final String line ){
+    private static String extractQuotedString( @NotNull final String line ){
         String result = null;
         int quoteStart= line.indexOf("\"");
         int quoteEnd  = -1;
@@ -39,7 +39,7 @@ public class OboParser implements Iterable {
     }
 
 
-    private Cardinality parseCardinality( @NotNull final String line ){
+    private static Cardinality parseCardinality( @NotNull final String line ){
         final String    cardinalityToken    = "cardinality";
         final String    orderToken          = "order";
         final String    isPrimaryToken      = "is_primary";
@@ -111,18 +111,18 @@ public class OboParser implements Iterable {
                 parent =  (TermRelations) terms.get( relation.getIdLeft() );
                 
                 if( parent != null )
-                    parent.add( (TermRelations)term );
+                    parent.add( term );
                 else{
                     parent = new TermRelations( relation.getIdLeft(),"", "" );
-                    parent.add( (TermRelations)term );
+                    parent.add( term );
                     terms.put(relation.getIdLeft(), parent);
                 }
             }
             
             TermRelations termRelation = (TermRelations) terms.get( id );
             if( termRelation != null ){
-                List<List<Term>> childs =  termRelation.getChilds();
-                ((TermRelations) term).addAll( childs );
+                List<List<Term>> children =  termRelation.getChilds();
+                ((TermRelations) term).addAll( children );
             }
             
             terms.put(id, term);
@@ -137,7 +137,7 @@ public class OboParser implements Iterable {
      * @param line line to read end extract information
      * @return Relation
      */
-    private Relation parseRelationShip( @NotNull final String type, @NotNull final String line ){
+    private static Relation parseRelationShip( @NotNull final String type, @NotNull final String line ){
         Cardinality     cardinality     = null;
         int             index           = 0;
         String          name            = "";
@@ -175,7 +175,7 @@ public class OboParser implements Iterable {
      * @param line line to read end extract information
      * @return
      */
-    private Relation parseRelation( @NotNull final String type, @NotNull final String line ){
+    private static Relation parseRelation( @NotNull final String type, @NotNull final String line ){
         Cardinality     cardinality     = null;
         String[]        splittedLine    = line.split("!");
         String          idLeft          = splittedLine[0].trim();
@@ -183,6 +183,29 @@ public class OboParser implements Iterable {
         String          idRight         = "";
         
         return new Relation( type, idLeft, cardinality, idRight, name );
+    }
+
+
+
+    private static void parseXref(Map<String, Reference> xref, String tokenXref, String line) {
+        int colonIndex      = line.indexOf(':');
+        int descStartIndex  = line.indexOf('"');
+        String key;
+        String ref;
+        String desc;
+        if( colonIndex >= 0 ) {
+            key = line.substring(0, colonIndex);
+            if( descStartIndex >= 0){
+                int descStopIndex  = line.indexOf('"', descStartIndex+1);
+                desc = line.substring( descStartIndex+1, descStopIndex );
+                ref = line.substring(colonIndex+1,descStartIndex).trim();
+            }
+            else {
+                desc = "";
+                ref = line.substring(colonIndex+1).trim();
+            }
+            xref.put(key, new Reference(ref,desc));
+        }
     }
 
 
@@ -198,20 +221,22 @@ public class OboParser implements Iterable {
         terms = new HashMap<>();
         String line = br.readLine();
         
-        String          id                  = null;
-        String          name                = null;
-        String          namespace           = null;
-        String          definition          = null;
-        Set<Relation>   has_input_compound  = new HashSet<>();
-        Set<Relation>   has_output_compound = new HashSet<>();
-        Set<Relation>   part_of             = new HashSet<>();
-        Set<Relation>   isA                 = new HashSet<>();
-        Relation        superPathway        = null;
-        final String    tokenInput          = "has_input_compound";
-        final String    tokenOutput         = "has_output_compound";
-        final String    tokenPartOf         = "part_of";
-        final String    tokenIsA            = "is_a";
-        final String    tokenSuperPathway   = "uniprot_super_pathway";
+        String                  id                  = null;
+        String                  name                = null;
+        String                  namespace           = null;
+        String                  definition          = null;
+        Set<Relation>           has_input_compound  = new HashSet<>();
+        Set<Relation>           has_output_compound = new HashSet<>();
+        Set<Relation>           part_of             = new HashSet<>();
+        Set<Relation>           isA                 = new HashSet<>();
+        Map<String,Reference>   xref                = new HashMap<>();
+        Relation                superPathway        = null;
+        final String            tokenInput          = "has_input_compound";
+        final String            tokenOutput         = "has_output_compound";
+        final String            tokenPartOf         = "part_of";
+        final String            tokenIsA            = "is_a";
+        final String            tokenSuperPathway   = "uniprot_super_pathway";
+        final String            tokenXref           = "xref";
         
         while( line != null ){
             if( line.startsWith("[Typedef]") ){
@@ -237,6 +262,7 @@ public class OboParser implements Iterable {
                     has_output_compound = new HashSet<>();
                     part_of             = new HashSet<>();
                     isA                 = new HashSet<>();
+                    xref                = new HashMap<>();
                     superPathway        = null;
                 }
             }
@@ -260,7 +286,9 @@ public class OboParser implements Iterable {
             }
             else if( line.startsWith( "is_a:" ) )
                isA.add( parseRelation( tokenIsA, line.substring( line.indexOf(tokenIsA) + tokenIsA.length() + 1 ).trim() ) );
-
+            else if( line.startsWith("xref:")){
+                parseXref( xref, tokenXref, line.substring( line.indexOf(tokenXref) + tokenXref.length() + 1 ).trim() );
+            }
             line = br.readLine();
         }
         saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, superPathway );
