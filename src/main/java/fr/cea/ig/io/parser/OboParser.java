@@ -78,26 +78,26 @@ public class OboParser implements Iterable {
         return new Cardinality( number, order, direction, isPrimary, isAlternate );
     }
     
-    private static Term termFactory(@NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Relation superPathway ) throws ParseException{
+    private static Term termFactory(@NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Map<String, Reference> xref, final Relation superPathway ) throws ParseException{
         Term term = null;
         if( namespace.equals("reaction") )
-            term = new UCR( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
+            term = new UCR( id, name, definition, xref, new Relations(has_input_compound, has_output_compound, part_of ) );
         else if( namespace.equals("enzymatic_reaction") )
-            term = new UER( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
+            term = new UER( id, name, definition, xref, new Relations(has_input_compound, has_output_compound, part_of ) );
         else if( namespace.equals("linear_sub_pathway") )
-            term = new ULS( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ) );
+            term = new ULS( id, name, definition, xref, new Relations(has_input_compound, has_output_compound, part_of ) );
         else if( namespace.equals("pathway") )
-            term = new UPA( id, name, definition, new Relations(has_input_compound, has_output_compound, part_of ), isA, superPathway );
+            term = new UPA( id, name, definition, xref, new Relations(has_input_compound, has_output_compound, part_of ), isA, superPathway );
         else if( namespace.equals("compound") )
-            term = new UPC( id, name, definition );
+            term = new UPC( id, name, definition, xref );
         else
             throw new ParseException("Unknown namespace: " + namespace, -1 );
         return term;
     }
 
 
-    private void saveTerm( @NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Relation superPathway ) throws ParseException{
-        Term term = termFactory( id, name, namespace, definition, has_input_compound, has_output_compound,  part_of, isA, superPathway );
+    private void saveTerm( @NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Map<String, Reference> xref, final Relation superPathway ) throws ParseException{
+        Term term = termFactory( id, name, namespace, definition, has_input_compound, has_output_compound,  part_of, isA, xref, superPathway );
         boolean isTermWithRelation = true;
         if( term instanceof UPC )
             isTermWithRelation = false;
@@ -254,7 +254,7 @@ public class OboParser implements Iterable {
             }
             else if( line.startsWith("[Term]") ){
                 if( id != null ){
-                    saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, superPathway);
+                    saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, xref, superPathway);
                     id                  = null;
                     name                = null;
                     namespace           = null;
@@ -292,7 +292,7 @@ public class OboParser implements Iterable {
             }
             line = br.readLine();
         }
-        saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, superPathway );
+        saveTerm(id, name, namespace, definition, has_input_compound, has_output_compound, part_of, isA, xref, superPathway );
         isr.close();
         br.close();
     }
