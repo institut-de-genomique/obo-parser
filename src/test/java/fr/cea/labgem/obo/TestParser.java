@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -36,11 +37,25 @@ public class TestParser extends TestCase {
     @Test
     public void testULSVariant() {
         UPA                term    = (UPA) oboParser.getTerm("UPa:UPA00033");
-        List<List<Term>>   childs  = term.getChilds();
+        List<List<Term>>   children  = term.getChildren();
 
-        assertEquals( 2, childs.size() );
-        assertEquals( "UPa:ULS00013", childs.get(1).get(0).getId() );
-        assertEquals( "UPa:ULS00014", childs.get(1).get(1).getId() );
+        assertEquals( 2, children.size() );
+        assertEquals( "UPa:ULS00013", children.get(1).get(0).getId() );
+        assertEquals( "UPa:ULS00014", children.get(1).get(1).getId() );
+
+        ULS uls12 = (ULS) oboParser.getTerm("UPa:ULS00012");
+        ULS uls13 = (ULS) oboParser.getTerm("UPa:ULS00013");
+        ULS uls14 = (ULS) oboParser.getTerm("UPa:ULS00014");
+
+        List<Variant> variants = new ArrayList<>();
+        Variant.getVariant(term.getChildren(), variants);
+        assertEquals(2,variants.size());
+        assertEquals(2,variants.get(0).size());
+        assertEquals(uls12,variants.get(0).get(0));
+        assertEquals(uls13,variants.get(0).get(1));
+        assertEquals(2,variants.get(1).size());
+        assertEquals(uls12,variants.get(1).get(0));
+        assertEquals(uls14,variants.get(1).get(1));
     }
 
     

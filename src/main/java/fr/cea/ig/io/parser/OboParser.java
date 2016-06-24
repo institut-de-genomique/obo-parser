@@ -78,7 +78,7 @@ public class OboParser implements Iterable {
         return new Cardinality( number, order, direction, isPrimary, isAlternate );
     }
     
-    private static Term termFactory(@NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Map<String, Reference> xref, final Relation superPathway ) throws ParseException{
+    private static Term termFactory(@NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Map<String, Set<Reference>> xref, final Relation superPathway ) throws ParseException{
         Term term = null;
         if( namespace.equals("reaction") )
             term = new UCR( id, name, definition, xref, new Relations(has_input_compound, has_output_compound, part_of ) );
@@ -96,7 +96,7 @@ public class OboParser implements Iterable {
     }
 
 
-    private void saveTerm( @NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Map<String, Reference> xref, final Relation superPathway ) throws ParseException{
+    private void saveTerm( @NotNull final String id, @NotNull final String name, @NotNull final String namespace, @NotNull final String definition, final Set<Relation>   has_input_compound, final Set<Relation> has_output_compound, final Set<Relation> part_of, final Set<Relation> isA, final Map<String, Set<Reference>> xref, final Relation superPathway ) throws ParseException{
         Term term = termFactory( id, name, namespace, definition, has_input_compound, has_output_compound,  part_of, isA, xref, superPathway );
         boolean isTermWithRelation = true;
         if( term instanceof UPC )
@@ -122,7 +122,7 @@ public class OboParser implements Iterable {
             
             TermRelations termRelation = (TermRelations) terms.get( id );
             if( termRelation != null ){
-                List<List<Term>> children =  termRelation.getChilds();
+                List<List<Term>> children =  termRelation.getChildren();
                 ((TermRelations) term).addAll( children );
             }
             
@@ -188,7 +188,7 @@ public class OboParser implements Iterable {
 
 
 
-    private static void parseXref(Map<String, Reference> xref, String tokenXref, String line) {
+    private static void parseXref(Map<String, Set<Reference>> xref, String tokenXref, String line) {
         int colonIndex      = line.indexOf(':');
         int descStartIndex  = line.indexOf('"');
         String key;
@@ -205,7 +205,12 @@ public class OboParser implements Iterable {
                 desc = "";
                 ref = line.substring(colonIndex+1).trim();
             }
-            xref.put(key, new Reference(ref,desc));
+            Set<Reference> values = xref.get(key);
+            if( values == null){
+                values = new HashSet<>();
+                xref.put(key, values);
+            }
+            values.add(new Reference(ref,desc));
         }
     }
 
@@ -222,22 +227,22 @@ public class OboParser implements Iterable {
         terms = new HashMap<>();
         String line = br.readLine();
         
-        String                  id                  = null;
-        String                  name                = null;
-        String                  namespace           = null;
-        String                  definition          = null;
-        Set<Relation>           has_input_compound  = new HashSet<>();
-        Set<Relation>           has_output_compound = new HashSet<>();
-        Set<Relation>           part_of             = new HashSet<>();
-        Set<Relation>           isA                 = new HashSet<>();
-        Map<String,Reference>   xref                = new HashMap<>();
-        Relation                superPathway        = null;
-        final String            tokenInput          = "has_input_compound";
-        final String            tokenOutput         = "has_output_compound";
-        final String            tokenPartOf         = "part_of";
-        final String            tokenIsA            = "is_a";
-        final String            tokenSuperPathway   = "uniprot_super_pathway";
-        final String            tokenXref           = "xref";
+        String                      id                  = null;
+        String                      name                = null;
+        String                      namespace           = null;
+        String                      definition          = null;
+        Set<Relation>               has_input_compound  = new HashSet<>();
+        Set<Relation>               has_output_compound = new HashSet<>();
+        Set<Relation>               part_of             = new HashSet<>();
+        Set<Relation>               isA                 = new HashSet<>();
+        Map<String,Set<Reference>>  xref                = new HashMap<>();
+        Relation                    superPathway        = null;
+        final String                tokenInput          = "has_input_compound";
+        final String                tokenOutput         = "has_output_compound";
+        final String                tokenPartOf         = "part_of";
+        final String                tokenIsA            = "is_a";
+        final String                tokenSuperPathway   = "uniprot_super_pathway";
+        final String                tokenXref           = "xref";
         
         while( line != null ){
             if( line.startsWith("[Typedef]") ){
