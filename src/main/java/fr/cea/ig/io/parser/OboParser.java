@@ -15,6 +15,17 @@ public class OboParser implements Iterable {
     private static final int DEFAULT_NUMBER_PAGE    = 10;
     private Map<String,Term> terms;
 
+    private static String stripId(@NotNull final String termId){
+        final String token = "UPa:";
+        String result;
+        if( termId.startsWith(token) ){
+            result = termId.substring( token.length() );
+        }
+        else
+            result = termId;
+        return result;
+    }
+
     private static void sort( final List<? extends Term> list){
         Collections.sort(list, new Comparator<Term>(){
           public int compare(Term o1, Term o2)
@@ -152,13 +163,13 @@ public class OboParser implements Iterable {
                 int cardinalityPos = item.indexOf("{cardinality");
                 if( cardinalityPos != -1 ){
                     cardinality = parseCardinality( item.substring(cardinalityPos) );
-                    idLeft      = item.substring( 0, cardinalityPos ).trim();
+                    idLeft      = stripId( item.substring( 0, cardinalityPos ).trim() );
                 }
                 else
-                    idLeft = item.trim();
+                    idLeft = stripId( item.trim() );
             }
             else if( "idRight".equals(cursor[ index ]) ){
-                idRight = item.trim();
+                idRight = stripId( item.trim() );
             }
             else if( "name".equals(cursor[ index ]) ){
                 name = item.trim();
@@ -179,7 +190,7 @@ public class OboParser implements Iterable {
     private static Relation parseRelation( @NotNull final String type, @NotNull final String line ){
         Cardinality     cardinality     = null;
         String[]        splittedLine    = line.split("!");
-        String          idLeft          = splittedLine[0].trim();
+        String          idLeft          = stripId( splittedLine[0].trim() );
         String          name            = splittedLine[1].trim();
         String          idRight         = "";
         
@@ -273,7 +284,7 @@ public class OboParser implements Iterable {
                 }
             }
             else if( line.startsWith("id:") )
-                id = line.substring( 4 );
+                id = stripId( line.substring( 4 ) );
             else if( line.startsWith("name:") )
                 name = line.substring( 6 );
             else if( line.startsWith("namespace:") )
@@ -347,7 +358,7 @@ public class OboParser implements Iterable {
 
 
     public List<UPA> getPathways( boolean needSorted ){
-        List<UPA> upaList = stream().filter(entry -> entry.getKey().startsWith("UPa:UPA"))
+        List<UPA> upaList = stream().filter(entry -> entry.getKey().startsWith("UPA"))
                                     .map(entry -> (UPA) entry.getValue())
                                     .collect(Collectors.toList());
         if(needSorted)
@@ -362,7 +373,7 @@ public class OboParser implements Iterable {
 
     
     public List<ULS> getBlocksReactions( boolean needSorted ){
-        List<ULS> ulsList = stream().filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+        List<ULS> ulsList = stream().filter(entry -> entry.getKey().startsWith("ULS"))
                                     .map(entry -> (ULS) entry.getValue())
                                     .collect(Collectors.toList());
         if(needSorted)
@@ -377,7 +388,7 @@ public class OboParser implements Iterable {
 
 
     public List<UER> getReactions( boolean needSorted ){
-        List<UER> uerList = stream().filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+        List<UER> uerList = stream().filter(entry -> entry.getKey().startsWith("UER"))
                                     .map(entry -> (UER) entry.getValue())
                                     .collect(Collectors.toList());
         if(needSorted)
@@ -392,7 +403,7 @@ public class OboParser implements Iterable {
 
 
     public List<UPC> getCompounds( boolean needSorted ){
-        List<UPC> upcList = stream().filter(entry -> entry.getKey().startsWith("UPa:ULS"))
+        List<UPC> upcList = stream().filter(entry -> entry.getKey().startsWith("UPC"))
                                     .map(entry -> (UPC) entry.getValue())
                                     .collect(Collectors.toList());
         if(needSorted)

@@ -30,22 +30,22 @@ public class TestParser extends TestCase {
     
     @Test
     public void testGetTerm() {
-        Term    term    = oboParser.getTerm("UPa:UPA00033");
-        assertEquals( "UPa:UPA00033", term.getId() );
+        Term    term    = oboParser.getTerm("UPA00033");
+        assertEquals( "UPA00033", term.getId() );
     }
     
     @Test
     public void testULSVariant() {
-        UPA                term    = (UPA) oboParser.getTerm("UPa:UPA00033");
+        UPA                term    = (UPA) oboParser.getTerm("UPA00033");
         List<List<Term>>   children  = term.getChildren();
 
         assertEquals( 2, children.size() );
-        assertEquals( "UPa:ULS00013", children.get(1).get(0).getId() );
-        assertEquals( "UPa:ULS00014", children.get(1).get(1).getId() );
+        assertEquals( "ULS00013", children.get(1).get(0).getId() );
+        assertEquals( "ULS00014", children.get(1).get(1).getId() );
 
-        ULS uls12 = (ULS) oboParser.getTerm("UPa:ULS00012");
-        ULS uls13 = (ULS) oboParser.getTerm("UPa:ULS00013");
-        ULS uls14 = (ULS) oboParser.getTerm("UPa:ULS00014");
+        ULS uls12 = (ULS) oboParser.getTerm("ULS00012");
+        ULS uls13 = (ULS) oboParser.getTerm("ULS00013");
+        ULS uls14 = (ULS) oboParser.getTerm("ULS00014");
 
         List<Variant> variants = new ArrayList<>();
         Variant.getVariant(term.getChildren(), variants);
@@ -61,8 +61,8 @@ public class TestParser extends TestCase {
     
     @Test
     public void testRelation() {
-        UPA         term     = (UPA) oboParser.getTerm("UPa:UPA00033");
-        Relation    relation = new Relation( "is_a", "UPa:UPA00404", "L-lysine biosynthesis" );
+        UPA         term     = (UPA) oboParser.getTerm("UPA00033");
+        Relation    relation = new Relation( "is_a", "UPA00404", "L-lysine biosynthesis" );
         Iterator<Relation> iter = term.getIsA().iterator();
         assertTrue(iter.hasNext());
         assertEquals( iter.next().toString(), relation.toString() );
@@ -70,17 +70,17 @@ public class TestParser extends TestCase {
     
     @Test
     public void testCardinality() {
-        ULS             term        = (ULS) oboParser.getTerm("UPa:ULS00012");
-        Relation        relation1   = new Relation( "has_input_compound", "UPa:UPC00026", new Cardinality( "1" ), "UPa:UPC00026", "2-oxoglutarate" );
-        Relation        relation2   = new Relation( "has_output_compound", "UPa:UPC00956", new Cardinality( "1" ), "UPa:UPC00956", "L-alpha-aminoadipate" );
-        Relation        relation3   = new Relation( "part_of", "UPa:UPA00033", new Cardinality( "1")  );
+        ULS             term        = (ULS) oboParser.getTerm("ULS00012");
+        Relation        relation1   = new Relation( "has_input_compound", "UPC00026", new Cardinality( "1" ), "UPC00026", "2-oxoglutarate" );
+        Relation        relation2   = new Relation( "has_output_compound", "UPC00956", new Cardinality( "1" ), "UPC00956", "L-alpha-aminoadipate" );
+        Relation        relation3   = new Relation( "part_of", "UPA00033", new Cardinality( "1")  );
         Set<Relation>   sr1         = term.getRelation( "has_input_compound");
         Relation[]      arr1        = sr1.toArray(new Relation[sr1.size()] );
         Set<Relation>   sr2         = term.getRelation( "has_output_compound");
         Relation[]      arr2        = sr2.toArray(new Relation[sr1.size()] );
         Set<Relation>   sr3         = term.getRelation( "part_of");
         Relation[]      arr3        = sr3.toArray(new Relation[sr1.size()] );
-        assertEquals( "UPa:ULS00012", term.getId() );
+        assertEquals( "ULS00012", term.getId() );
         assertEquals( arr1[0].equals(relation1), true );
         assertEquals( arr2[0].equals(relation2), true );
         assertEquals( arr3[0].equals(relation3), true );
