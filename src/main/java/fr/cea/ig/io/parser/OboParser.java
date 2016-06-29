@@ -199,7 +199,7 @@ public class OboParser implements Iterable {
 
 
 
-    private static void parseXref(Map<String, Set<Reference>> xref, String tokenXref, String line) {
+    private static void parseXref(@NotNull final Map<String, Set<Reference>> xref, @NotNull final String tokenXref, @NotNull final String line) {
         int colonIndex      = line.indexOf(':');
         int descStartIndex  = line.indexOf('"');
         String key;
@@ -216,7 +216,7 @@ public class OboParser implements Iterable {
                 desc = "";
                 ref = line.substring(colonIndex+1).trim();
             }
-            Set<Reference> values = xref.get(key);
+            Set<Reference> values = xref.get(key.toUpperCase());
             if( values == null){
                 values = new HashSet<>();
                 xref.put(key, values);
@@ -290,7 +290,7 @@ public class OboParser implements Iterable {
             else if( line.startsWith("namespace:") )
                 namespace = line.substring( 11 );
             else if( line.startsWith("def:") )
-                definition = line.substring( 5 );
+                definition = extractQuotedString( line.substring( 5 ) );
             else if( line.startsWith("relationship:") ){
                 if( line.contains(tokenInput) )
                     has_input_compound.add( parseRelationShip( tokenInput, line.substring( line.indexOf(tokenInput) + tokenInput.length() ).trim() ) );
